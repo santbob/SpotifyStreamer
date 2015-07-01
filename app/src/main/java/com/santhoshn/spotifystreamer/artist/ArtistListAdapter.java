@@ -11,6 +11,9 @@ import android.widget.TextView;
 
 import com.santhoshn.spotifystreamer.R;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
+
 /**
  * Created by santhosh on 30/06/15.
  */
@@ -18,9 +21,9 @@ public class ArtistListAdapter extends ArrayAdapter<Artist> {
 
     private Context context;
     private int layoutResourceId;
-    private Artist artists[] = null;
+    private List<Artist> artists = null;
 
-    public ArtistListAdapter(Context context, int layoutResourceId, Artist[] artists) {
+    public ArtistListAdapter(Context context, int layoutResourceId, List<Artist> artists) {
         super(context, layoutResourceId, artists);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
@@ -50,7 +53,7 @@ public class ArtistListAdapter extends ArrayAdapter<Artist> {
         }
 
         //Lookup the Artist Object at the given position.
-        Artist artist = artists[position];
+        Artist artist = artists.get(position);
         //Load the image url using the picasso library, which takes care of downloading caching and displaying it in the ImageView.
         Picasso.with(context)
                 .load(artist.getThumbnailImageUrl())
