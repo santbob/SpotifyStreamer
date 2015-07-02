@@ -1,8 +1,10 @@
 package com.santhoshn.spotifystreamer;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +21,10 @@ import com.santhoshn.spotifystreamer.artist.ArtistListAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import kaaes.spotify.webapi.android.SpotifyApi;
+import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.ArtistsPager;
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -26,8 +32,8 @@ import java.util.List;
 public class MainActivityFragment extends Fragment {
 
     private ArtistListAdapter mArtistAdapter = null;
-
-    private EditText searchText = null;
+    private SpotifyService mSpotifyService = new SpotifyApi().getService();
+    private EditText mSearchText = null;
 
     public MainActivityFragment() {
     }
@@ -38,14 +44,14 @@ public class MainActivityFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        searchText = (EditText) rootView.findViewById(R.id.search_artist);
+        mSearchText = (EditText) rootView.findViewById(R.id.search_artist);
 
-        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    InputMethodManager in = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    in.hideSoftInputFromWindow(searchText.getWindowToken(), 0);
+                    InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    in.hideSoftInputFromWindow(mSearchText.getWindowToken(), 0);
                     searchArtist();
                     return true;
                 }
@@ -63,14 +69,47 @@ public class MainActivityFragment extends Fragment {
     }
 
     private void searchArtist() {
-        List<Artist> artistList = new ArrayList<Artist>();
-        artistList.add(new Artist("1", "Britney", "https://d3rt1990lpmkn.cloudfront.net/640/aced81eca24558d0ce2d128bac24f1a714316bae"));
-        artistList.add(new Artist("2", "Katy Perry", "https://d3rt1990lpmkn.cloudfront.net/640/d962669f8cb25b4d41b5f8970960d819ea88e2fc"));
-        artistList.add(new Artist("3", "Iggy Azalea", "https://d3rt1990lpmkn.cloudfront.net/640/54664af051f70685bc26529ac53d0527de79b059"));
-        artistList.add(new Artist("4", "Rihanna", "https://d3rt1990lpmkn.cloudfront.net/640/d2370c8f8e57525bd4c76931c61e97787b40823b"));
-        artistList.add(new Artist("5", "Christina Aguilera", "https://d3rt1990lpmkn.cloudfront.net/640/3411fc406684ec4f073314fe3c679c0000c15fbd"));
-        artistList.add(new Artist("6", "Lady Gaga", "https://d3rt1990lpmkn.cloudfront.net/640/90427345523c8bbfbdfb981cec36a4ff7d8924ce"));
-        artistList.add(new Artist("7", "Nicki Minaj", "https://d3rt1990lpmkn.cloudfront.net/640/60022a8b1b807f1cd7b540769bdf8e655e72fc32"));
-        mArtistAdapter.addAll(artistList);
+        SearchArtistTask task = new SearchArtistTask();
+        task.execute(mSearchText.getText().toString());
+    }
+
+    private class SearchArtistTask extends AsyncTask<String, Void, List> {
+        private final String LOG_TAG = SearchArtistTask.class.getSimpleName();
+
+        protected List<Artist> doInBackground(String... params) {
+            List<Artist> artistList;
+            // If there's no search string, there's nothing to look up.  Verify size of params.
+            if (params.length == 0) {
+                return null;
+            }
+
+            try {
+                ArtistsPager results = mSpotifyService.searchArtists(params[0]);
+                artistList = new ArrayList<Artist>();
+                if (results != null && results.artists != null && results.artists.items != null) {
+                    for (int i = 0; i < results.artists.items.size(); i++) {
+                        kaaes.spotify.webapi.android.models.Artist artist = results.artists.items.get(i);
+                        String imageUrl = null;
+                        if (artist.images != null && artist.images.size() > 0) {
+                            imageUrl = artist.images.get(2).url;
+                        }
+                        artistList.add(new Artist(artist.id, artist.name, imageUrl));
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Error ", e);
+                // If the code didn't successfully get the artist data, there's no point in attempin to parse it.
+                return null;
+            }
+            return artistList;
+        }
+
+        @Override
+        protected void onPostExecute(List artists) {
+            if (artists != null) {
+                mArtistAdapter.clear();
+                mArtistAdapter.addAll(artists);
+            }
+        }
     }
 }
