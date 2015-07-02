@@ -12,6 +12,8 @@ import android.widget.TextView;
 import com.santhoshn.spotifystreamer.R;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 /**
  * Created by santhosh on 30/06/15.
  */
@@ -19,9 +21,9 @@ public class TrackListAdapter  extends ArrayAdapter<Track> {
 
     private Context context;
     private int layoutResourceId;
-    private Track tracks[] = null;
+    private List<Track> tracks = null;
 
-    public TrackListAdapter(Context context, int layoutResourceId, Track[] tracks) {
+    public TrackListAdapter(Context context, int layoutResourceId, List<Track> tracks) {
         super(context, layoutResourceId, tracks);
         this.layoutResourceId = layoutResourceId;
         this.context = context;
@@ -48,7 +50,7 @@ public class TrackListAdapter  extends ArrayAdapter<Track> {
         }
 
         //fetch the corresponding Track object at that position.
-        Track track = tracks[position];
+        Track track = tracks.get(position);
         //set the values from Track Object to right views.
         holder.albumNameTextView.setText(track.getAlbumName());
         holder.trackNameTextView.setText(track.getTrackName());

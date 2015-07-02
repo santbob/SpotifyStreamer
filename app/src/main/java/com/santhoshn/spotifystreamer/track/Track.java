@@ -5,10 +5,19 @@ package com.santhoshn.spotifystreamer.track;
  */
 public class Track {
     private String spotifyId;
-    private String thumbnailImageUrl;
-    private String albumName;
     private String trackName;
+    private String albumName;
+    private String thumbnailImageUrl;
 
+    public Track(){
+
+    }
+    public Track(String spotifyId, String trackName, String albumName, String thumbnailImageUrl) {
+        this.spotifyId = spotifyId;
+        this.trackName = trackName;
+        this.albumName = albumName;
+        this.thumbnailImageUrl = thumbnailImageUrl;
+    }
     public String getSpotifyId() {
         return spotifyId;
     }

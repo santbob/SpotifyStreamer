@@ -1,6 +1,7 @@
 package com.santhoshn.spotifystreamer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -27,11 +29,11 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
 
 
 /**
- * A placeholder fragment containing a simple view.
+ * A Main fragment containing a searchbox and listview full or artists search Result.
  */
 public class MainActivityFragment extends Fragment {
 
-    private ArtistListAdapter mArtistAdapter = null;
+    private ArtistListAdapter mArtistAdapter;
     private SpotifyService mSpotifyService = new SpotifyApi().getService();
     private EditText mSearchText = null;
 
@@ -65,6 +67,15 @@ public class MainActivityFragment extends Fragment {
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_artistList);
         listView.setAdapter(mArtistAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), TopTenTracksActivity.class);
+                intent.putExtra(Intent.EXTRA_TEXT, mArtistAdapter.getItem(position).getSpotifyId());
+                startActivity(intent);
+            }
+        });
+
         return rootView;
     }
 
@@ -98,7 +109,7 @@ public class MainActivityFragment extends Fragment {
                 }
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the artist data, there's no point in attempin to parse it.
+                // If the code didn't successfully get the artist data, there's no point in attempting to parse it.
                 return null;
             }
             return artistList;
