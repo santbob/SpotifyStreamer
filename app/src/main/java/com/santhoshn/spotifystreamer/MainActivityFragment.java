@@ -100,7 +100,7 @@ public class MainActivityFragment extends Fragment {
                 if (results != null && results.artists != null && results.artists.items != null) {
                     for (int i = 0; i < results.artists.items.size(); i++) {
                         kaaes.spotify.webapi.android.models.Artist artist = results.artists.items.get(i);
-                        String imageUrl = null;
+                        String imageUrl = "http://img.santhoshn.com/default_music_icon.png";
                         if (artist.images != null && artist.images.size() > 0) {
                             imageUrl = artist.images.get(2).url;
                         }

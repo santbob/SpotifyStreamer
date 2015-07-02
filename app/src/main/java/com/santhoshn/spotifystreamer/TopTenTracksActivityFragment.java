@@ -73,7 +73,7 @@ public class TopTenTracksActivityFragment extends Fragment {
                 if (results != null && results.tracks != null) {
                     for (int i = 0; i < results.tracks.size(); i++) {
                         kaaes.spotify.webapi.android.models.Track track = results.tracks.get(i);
-                        String imageUrl = null;
+                        String imageUrl = "http://img.santhoshn.com/music_disc.png";
                         if (track.album != null && track.album.images != null && track.album.images.size() > 0) {
                             imageUrl = track.album.images.get(2).url;
                         }
