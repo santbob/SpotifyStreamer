@@ -4,20 +4,19 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:listPreferredItemHeight"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
     <ImageView
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:id="@+id/artist_thumbnail"
-        android:layout_marginBottom="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_margin="10dp"
         />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
+        android:textSize="15sp"
         android:padding="5dp"
         android:id="@+id/artist_name"/>
 </LinearLayout>
