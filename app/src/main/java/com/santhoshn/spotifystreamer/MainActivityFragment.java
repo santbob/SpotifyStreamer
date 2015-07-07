@@ -38,7 +38,7 @@ public class MainActivityFragment extends Fragment {
     private ArtistListAdapter mArtistAdapter;
     private SpotifyService mSpotifyService = new SpotifyApi().getService();
     private EditText mSearchText = null;
-
+    private ListView mListView;
     public MainActivityFragment() {
     }
 
@@ -63,6 +63,9 @@ public class MainActivityFragment extends Fragment {
                     InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     in.hideSoftInputFromWindow(mSearchText.getWindowToken(), 0);
                     searchArtist();
+                    //set the scroll position of listview to default
+                    //reference - https://discussions.udacity.com/t/listview-scroll-position-stays-the-same-on-new-search/24601
+                    mListView.setSelection(View.SCROLLBAR_POSITION_DEFAULT);
                     return true;
                 }
                 return false;
@@ -76,9 +79,9 @@ public class MainActivityFragment extends Fragment {
         }
 
 
-        ListView listView = (ListView) rootView.findViewById(R.id.listview_artistList);
-        listView.setAdapter(mArtistAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListView = (ListView) rootView.findViewById(R.id.listview_artistList);
+        mListView.setAdapter(mArtistAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), TopTenTracksActivity.class);

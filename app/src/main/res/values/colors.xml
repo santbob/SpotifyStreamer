@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="red">#FFFFFF</color>
+    <color name="app_primary">#e8ae30</color>
+    <color name="app_primary_dark">#de8b27</color>
+    <color name="app_maroon">#930b0b</color>
+</resources>
