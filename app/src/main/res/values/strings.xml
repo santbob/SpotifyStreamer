@@ -2,4 +2,8 @@
     <string name="app_name">Spotify Streamer</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_top_ten_tracks">Top 10 Tracks</string>
+    <string name="error_empty_artist_search_result">There are no artist matching the search, please change the search</string>
+    <string name="error_empty_top10_tracks_search_result">There are no top 10 tracks for the artist</string>
+    <string name="error_null_result_for_artist">Invalid Artists Search</string>
+    <string name="error_null_result_for_tracks">Invalid Top 10 tracks Search</string>
 </resources>

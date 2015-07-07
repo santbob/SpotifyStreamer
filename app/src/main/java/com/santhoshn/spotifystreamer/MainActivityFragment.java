@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.santhoshn.spotifystreamer.artist.Artist;
 import com.santhoshn.spotifystreamer.artist.ArtistListAdapter;
@@ -41,9 +43,15 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Retain this fragment across configuration changes.
+        setRetainInstance(true);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         mSearchText = (EditText) rootView.findViewById(R.id.search_artist);
@@ -61,9 +69,12 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
-        mArtistAdapter = new ArtistListAdapter(
-                getActivity(),
-                R.layout.artist_list_item, new ArrayList<Artist>());
+        if(mArtistAdapter == null) {
+            mArtistAdapter = new ArtistListAdapter(
+                    getActivity(),
+                    R.layout.artist_list_item, new ArrayList<Artist>());
+        }
+
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_artistList);
         listView.setAdapter(mArtistAdapter);
@@ -72,6 +83,7 @@ public class MainActivityFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), TopTenTracksActivity.class);
                 intent.putExtra(Intent.EXTRA_TEXT, mArtistAdapter.getItem(position).getSpotifyId());
+                intent.putExtra(Intent.EXTRA_SUBJECT, mArtistAdapter.getItem(position).getName());
                 startActivity(intent);
             }
         });
@@ -100,8 +112,11 @@ public class MainActivityFragment extends Fragment {
                 if (results != null && results.artists != null && results.artists.items != null) {
                     for (int i = 0; i < results.artists.items.size(); i++) {
                         kaaes.spotify.webapi.android.models.Artist artist = results.artists.items.get(i);
+                        //initialize the imageUrl with defaultImageUrl
                         String imageUrl = "http://img.santhoshn.com/default_music_icon.png";
                         if (artist.images != null && artist.images.size() > 0) {
+                            //once we know there are images for the artist, pick the first one and update imageUrl.
+                            //we can fetch the right size image based on the target device.
                             imageUrl = artist.images.get(0).url;
                         }
                         artistList.add(new Artist(artist.id, artist.name, imageUrl));
@@ -118,9 +133,27 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(List artists) {
             if (artists != null) {
-                mArtistAdapter.clear();
-                mArtistAdapter.addAll(artists);
+                if (artists.isEmpty()) {
+                    //Spotify returned empty result, show toast to user informing search resulted in empty results
+                    showToast(getString(R.string.error_empty_artist_search_result));
+                } else {
+                    //clear the adapater and add the new results we got.
+                    mArtistAdapter.clear();
+                    mArtistAdapter.addAll(artists);
+                }
+            } else {
+                //Spotify Result null response which is bad, ideally should never happen. just for this project show it in toast.
+                showToast(getString(R.string.error_null_result_for_artist));
             }
+        }
+
+        /*
+           Shows the Toast message when there is no data for listview.
+        */
+        private void showToast(String displayText) {
+            Toast toast = Toast.makeText(getActivity(), displayText, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 10, 30);
+            toast.show();
         }
     }
 }
