@@ -92,7 +92,7 @@ public class TopTenTracksActivityFragment extends Fragment {
                     for (int i = 0; i < results.tracks.size(); i++) {
                         kaaes.spotify.webapi.android.models.Track track = results.tracks.get(i);
                         //initialize the imageUrl with defaultImageUrl
-                        String imageUrl = "http://img.santhoshn.com/music_disc.png";
+                        String imageUrl = "http://img.santhoshn.com/music.png";
                         if (track.album != null && track.album.images != null && track.album.images.size() > 0) {
                             //once we know there are images for the artist, pick the first one and update imageUrl.
                             //we can fetch the right size image based on the target device.

@@ -116,7 +116,7 @@ public class MainActivityFragment extends Fragment {
                     for (int i = 0; i < results.artists.items.size(); i++) {
                         kaaes.spotify.webapi.android.models.Artist artist = results.artists.items.get(i);
                         //initialize the imageUrl with defaultImageUrl
-                        String imageUrl = "http://img.santhoshn.com/default_music_icon.png";
+                        String imageUrl = "http://img.santhoshn.com/music.png";
                         if (artist.images != null && artist.images.size() > 0) {
                             //once we know there are images for the artist, pick the first one and update imageUrl.
                             //we can fetch the right size image based on the target device.
