@@ -135,13 +135,14 @@ public class MainActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List artists) {
+            //Clear adapter always before updating new ones, to avoid previous results being shown for empty results or error results
+            mArtistAdapter.clear();
             if (artists != null) {
                 if (artists.isEmpty()) {
                     //Spotify returned empty result, show toast to user informing search resulted in empty results
                     showToast(getString(R.string.error_empty_artist_search_result));
                 } else {
-                    //clear the adapater and add the new results we got.
-                    mArtistAdapter.clear();
+                    //add the new results we got.
                     mArtistAdapter.addAll(artists);
                 }
             } else {
