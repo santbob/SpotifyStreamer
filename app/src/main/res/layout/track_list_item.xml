@@ -5,7 +5,8 @@
     android:minHeight="?android:listPreferredItemHeight"
     android:gravity="center_vertical"
     android:paddingTop="10dp"
-    android:paddingBottom="10dp">
+    android:paddingBottom="10dp"
+    android:background="@drawable/touch_selector">
     <ImageView
         android:layout_width="80dp"
         android:layout_height="80dp"

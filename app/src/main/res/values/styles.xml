@@ -27,4 +27,8 @@
         <!-- action menu item icon color - only applies to appcompat-v7 icons :( -->
         <item name="colorControlNormal">?android:textColorPrimary</item>
     </style>
+    <style name="SpotifyStreamerListStyle">
+        <!-- Here it's a stub.  In screens of sufficient width, this style includes modifications
+        for two-pane layout -->
+    </style>
 </resources>

@@ -1,6 +1,5 @@
 package com.santhoshn.spotifystreamer;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -30,6 +29,8 @@ import kaaes.spotify.webapi.android.models.Tracks;
  */
 public class TopTenTracksActivityFragment extends Fragment {
 
+    public static final String TRACK_SPOTIFY_ID = "trackSpotifyId";
+    public static final String TRACK_SUBTITLE = "subtitle";
     private TrackListAdapter mTracksAdapter;
     private SpotifyService mSpotifyService = new SpotifyApi().getService();
 
@@ -54,12 +55,15 @@ public class TopTenTracksActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        String artistSpotifyId = null;
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            artistSpotifyId = arguments.getString(TRACK_SPOTIFY_ID);
+        }
 
         View rootView = inflater.inflate(R.layout.fragment_top_ten_tracks, container, false);
 
-        Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-            String artistSpotifyId = intent.getStringExtra(Intent.EXTRA_TEXT);
+        if (artistSpotifyId != null) {
             fetchTop10Tracks(artistSpotifyId);
         }
         //create new instance of Adapter only if its not already created

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v4.app.FragmentManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -22,14 +21,19 @@ public class TopTenTracksActivity extends ActionBarActivity {
         setSubTitle();
         setContentView(R.layout.activity_top_ten_tracks);
 
-        //Find the existing Fragment using the Tag it was created with.
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        mTracksFragment = (TopTenTracksActivityFragment) fragmentManager.findFragmentByTag(TRACKS_FRAGMENT_TAG);
+        if (savedInstanceState == null) {
+            // Create the detail fragment and add it to the activity
+            // using a fragment transaction.
+            String spotifyId = getIntent().getStringExtra(TopTenTracksActivityFragment.TRACK_SPOTIFY_ID);
+            Bundle arguments = new Bundle();
+            arguments.putString(TopTenTracksActivityFragment.TRACK_SPOTIFY_ID,spotifyId);
 
-        //create new Fragment and begin transaction using fragment Manager, if its not created already
-        if (mTracksFragment == null) {
-            mTracksFragment = new TopTenTracksActivityFragment();
-            fragmentManager.beginTransaction().add(mTracksFragment, TRACKS_FRAGMENT_TAG).commit();
+            TopTenTracksActivityFragment fragment = new TopTenTracksActivityFragment();
+            fragment.setArguments(arguments);
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.topten_tracks_container, fragment)
+                    .commit();
         }
     }
 
@@ -58,8 +62,8 @@ public class TopTenTracksActivity extends ActionBarActivity {
 
     private void setSubTitle() {
         Intent intent = getIntent();
-        if(intent != null && intent.hasExtra(Intent.EXTRA_SUBJECT)){
-            String subTitle = intent.getStringExtra(Intent.EXTRA_SUBJECT);
+        if(intent != null && intent.hasExtra(TopTenTracksActivityFragment.TRACK_SUBTITLE)){
+            String subTitle = intent.getStringExtra(TopTenTracksActivityFragment.TRACK_SUBTITLE);
             if(subTitle != null) {
                 ActionBar ab = getSupportActionBar();
                 ab.setSubtitle(subTitle);

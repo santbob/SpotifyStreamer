@@ -1,7 +1,6 @@
 package com.santhoshn.spotifystreamer;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -33,13 +32,23 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
 /**
  * A Main fragment containing a searchbox and listview full or artists search Result.
  */
-public class MainActivityFragment extends Fragment {
+public class ArtistFragment extends Fragment {
 
     private ArtistListAdapter mArtistAdapter;
     private SpotifyService mSpotifyService = new SpotifyApi().getService();
     private EditText mSearchText = null;
     private ListView mListView;
-    public MainActivityFragment() {
+    private int mPosition = ListView.INVALID_POSITION;
+    private static final String SELECTED_ARTIST_INDEX = "selected_artist_index";
+
+    public ArtistFragment() {
+    }
+
+    public interface Callback {
+        /**
+         * TopTenTracks Callback for when an item has been selected.
+         */
+        public void onItemSelected(String spotifyId, String subTitle);
     }
 
     @Override
@@ -52,7 +61,7 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_artists, container, false);
 
         mSearchText = (EditText) rootView.findViewById(R.id.search_artist);
 
@@ -84,14 +93,35 @@ public class MainActivityFragment extends Fragment {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), TopTenTracksActivity.class);
-                intent.putExtra(Intent.EXTRA_TEXT, mArtistAdapter.getItem(position).getSpotifyId());
-                intent.putExtra(Intent.EXTRA_SUBJECT, mArtistAdapter.getItem(position).getName());
-                startActivity(intent);
+                String spotifyId = mArtistAdapter.getItem(position).getSpotifyId();
+                String subtitle = mArtistAdapter.getItem(position).getName();
+
+               /* Intent intent = new Intent(getActivity(), TopTenTracksActivity.class);
+                intent.putExtra(Intent.EXTRA_TEXT, spotifyId);
+                intent.putExtra(Intent.EXTRA_SUBJECT, subtitle);
+                startActivity(intent);*/
+
+                ((Callback) getActivity()).onItemSelected(spotifyId, subtitle);
+                mPosition = position;
             }
         });
 
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_ARTIST_INDEX)) {
+            mPosition = savedInstanceState.getInt(SELECTED_ARTIST_INDEX);
+        }
+
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // When tablets rotate, the currently selected list item needs to be saved.
+        // When no item is selected, mPosition will be set to Listview.INVALID_POSITION,
+        // so check for that before storing.
+        if (mPosition != ListView.INVALID_POSITION) {
+            outState.putInt(SELECTED_ARTIST_INDEX, mPosition);
+        }
+        super.onSaveInstanceState(outState);
     }
 
     private void searchArtist() {
@@ -144,6 +174,11 @@ public class MainActivityFragment extends Fragment {
                 } else {
                     //add the new results we got.
                     mArtistAdapter.addAll(artists);
+                    if (mPosition != ListView.INVALID_POSITION) {
+                        // If we don't need to restart the loader, and there's a desired position to restore
+                        // to, do so now.
+                        mListView.smoothScrollToPosition(mPosition);
+                    }
                 }
             } else {
                 //Spotify Result null response which is bad, ideally should never happen. just for this project show it in toast.
