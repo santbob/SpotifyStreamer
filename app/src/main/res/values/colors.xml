@@ -7,4 +7,5 @@
     <color name="app_maroon">#930b0b</color>
     <color name="row_pressed">#FFB74D</color>
     <color name="row_selected">#FFE0B2</color>
+    <color name="border">#FF9100</color>
 </resources>
