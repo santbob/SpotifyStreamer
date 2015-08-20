@@ -46,7 +46,7 @@ public class ArtistFragment extends Fragment {
 
     public interface Callback {
         /**
-         * TopTenTracks Callback for when an item has been selected.
+         * Artist Callback for when an artist has been selected.
          */
         public void onItemSelected(String spotifyId, String subTitle);
     }

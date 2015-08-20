@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -31,6 +32,8 @@ public class TopTenTracksActivityFragment extends Fragment {
 
     public static final String TRACK_SPOTIFY_ID = "trackSpotifyId";
     public static final String TRACK_SUBTITLE = "subtitle";
+
+    private ArrayList<Track> mTracks = new ArrayList<Track>();
     private TrackListAdapter mTracksAdapter;
     private SpotifyService mSpotifyService = new SpotifyApi().getService();
 
@@ -51,6 +54,12 @@ public class TopTenTracksActivityFragment extends Fragment {
         setRetainInstance(true);
     }
 
+    public interface Callback {
+        /**
+         * TopTenTracks Callback for when a track has been selected.
+         */
+        public void onItemSelected(int index, ArrayList<Track> tracks);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,7 +82,12 @@ public class TopTenTracksActivityFragment extends Fragment {
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_tracksList);
         listView.setAdapter(mTracksAdapter);
-
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ((Callback) getActivity()).onItemSelected(position, mTracks);
+            }
+        });
         return rootView;
     }
 
@@ -123,6 +137,8 @@ public class TopTenTracksActivityFragment extends Fragment {
                     //clear the adapater and add the new results we got.
                     mTracksAdapter.clear();
                     mTracksAdapter.addAll(tracks);
+                    mTracks.clear();
+                    mTracks.addAll(tracks);
                 }
             } else {
                 //Spotify Result null response which is bad, ideally should never happen. just for this project show it in toast.

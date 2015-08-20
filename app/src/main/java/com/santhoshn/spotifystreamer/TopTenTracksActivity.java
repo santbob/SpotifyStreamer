@@ -8,8 +8,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.santhoshn.spotifystreamer.track.Track;
 
-public class TopTenTracksActivity extends ActionBarActivity {
+import java.util.ArrayList;
+
+
+public class TopTenTracksActivity extends ActionBarActivity implements TopTenTracksActivityFragment.Callback {
 
     private static final String TRACKS_FRAGMENT_TAG = "top_ten_tracks";
     private TopTenTracksActivityFragment mTracksFragment;
@@ -37,6 +41,13 @@ public class TopTenTracksActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    public void onItemSelected(int trackIndex, ArrayList<Track> tracks) {
+        Intent intent = new Intent(this, PlayerActivity.class)
+                .putParcelableArrayListExtra(PlayerActivityFragment.PLAY_LIST, tracks)
+                .putExtra(TopTenTracksActivityFragment.TRACK_SUBTITLE, trackIndex);
+        startActivity(intent);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -6,4 +6,6 @@
     <string name="error_empty_top10_tracks_search_result">There are no top 10 tracks for the artist</string>
     <string name="error_null_result_for_artist">Invalid Artists Search</string>
     <string name="error_null_result_for_tracks">Invalid Top 10 tracks Search</string>
+    <string name="title_activity_player">PlayerActivity</string>
+    <string name="hello_world">Hello world!</string>
 </resources>
