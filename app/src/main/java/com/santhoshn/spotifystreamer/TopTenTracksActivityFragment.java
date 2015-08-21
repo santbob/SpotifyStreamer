@@ -54,12 +54,6 @@ public class TopTenTracksActivityFragment extends Fragment {
         setRetainInstance(true);
     }
 
-    public interface Callback {
-        /**
-         * TopTenTracks Callback for when a track has been selected.
-         */
-        public void onItemSelected(int index, ArrayList<Track> tracks);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -76,7 +70,7 @@ public class TopTenTracksActivityFragment extends Fragment {
             fetchTop10Tracks(artistSpotifyId);
         }
         //create new instance of Adapter only if its not already created
-        if(mTracksAdapter == null) {
+        if (mTracksAdapter == null) {
             mTracksAdapter = new TrackListAdapter(getActivity(), R.layout.track_list_item, new ArrayList<Track>());
         }
 
@@ -85,7 +79,11 @@ public class TopTenTracksActivityFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ((Callback) getActivity()).onItemSelected(position, mTracks);
+                try{
+                    ((ArtistCallback) getActivity()).onTrackSelected(position, mTracks);
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
             }
         });
         return rootView;

@@ -13,11 +13,11 @@ import com.santhoshn.spotifystreamer.track.Track;
 import java.util.ArrayList;
 
 
-public class TopTenTracksActivity extends ActionBarActivity implements TopTenTracksActivityFragment.Callback {
+public class TopTenTracksActivity extends ActionBarActivity implements TrackCallback {
 
     private static final String TRACKS_FRAGMENT_TAG = "top_ten_tracks";
     private TopTenTracksActivityFragment mTracksFragment;
-
+   
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +30,7 @@ public class TopTenTracksActivity extends ActionBarActivity implements TopTenTra
             // using a fragment transaction.
             String spotifyId = getIntent().getStringExtra(TopTenTracksActivityFragment.TRACK_SPOTIFY_ID);
             Bundle arguments = new Bundle();
-            arguments.putString(TopTenTracksActivityFragment.TRACK_SPOTIFY_ID,spotifyId);
+            arguments.putString(TopTenTracksActivityFragment.TRACK_SPOTIFY_ID, spotifyId);
 
             TopTenTracksActivityFragment fragment = new TopTenTracksActivityFragment();
             fragment.setArguments(arguments);
@@ -42,10 +42,10 @@ public class TopTenTracksActivity extends ActionBarActivity implements TopTenTra
     }
 
     @Override
-    public void onItemSelected(int trackIndex, ArrayList<Track> tracks) {
+    public void onTrackSelected(int trackIndex, ArrayList<Track> tracks) {
         Intent intent = new Intent(this, PlayerActivity.class)
                 .putParcelableArrayListExtra(PlayerActivityFragment.PLAY_LIST, tracks)
-                .putExtra(TopTenTracksActivityFragment.TRACK_SUBTITLE, trackIndex);
+                .putExtra(PlayerActivityFragment.TRACK_INDEX, trackIndex);
         startActivity(intent);
     }
 
@@ -73,9 +73,9 @@ public class TopTenTracksActivity extends ActionBarActivity implements TopTenTra
 
     private void setSubTitle() {
         Intent intent = getIntent();
-        if(intent != null && intent.hasExtra(TopTenTracksActivityFragment.TRACK_SUBTITLE)){
+        if (intent != null && intent.hasExtra(TopTenTracksActivityFragment.TRACK_SUBTITLE)) {
             String subTitle = intent.getStringExtra(TopTenTracksActivityFragment.TRACK_SUBTITLE);
-            if(subTitle != null) {
+            if (subTitle != null) {
                 ActionBar ab = getSupportActionBar();
                 ab.setSubtitle(subTitle);
             }

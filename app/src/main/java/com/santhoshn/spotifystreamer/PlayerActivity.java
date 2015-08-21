@@ -18,6 +18,7 @@ public class PlayerActivity extends AppCompatActivity {
 
         String trackIndex = getIntent().getStringExtra(PlayerActivityFragment.TRACK_INDEX);
         ArrayList playlist = getIntent().getParcelableArrayListExtra(PlayerActivityFragment.PLAY_LIST);
+
         Bundle arguments = new Bundle();
         arguments.putString(PlayerActivityFragment.TRACK_INDEX, trackIndex);
         arguments.putParcelableArrayList(PlayerActivityFragment.PLAY_LIST, playlist);
@@ -25,9 +26,11 @@ public class PlayerActivity extends AppCompatActivity {
         PlayerActivityFragment fragment = new PlayerActivityFragment();
         fragment.setArguments(arguments);
 
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.topten_tracks_container, fragment)
-                .commit();
+        getFragmentManager().beginTransaction().add(R.id.player_container, fragment).commit();
+
+//        getSupportFragmentManager().beginTransaction()
+//                .add(R.id.player_container, fragment)
+//                .commit();
     }
 
 

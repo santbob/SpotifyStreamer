@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:padding="16dp"
     android:orientation="vertical"
-    tools:context=".PlayerActivityFragment">
+    tools:context="com.santhoshn.spotifystreamer.PlayerActivityFragment">
 
     <TextView
         android:id="@+id/playing_artist_name"

@@ -44,13 +44,6 @@ public class ArtistFragment extends Fragment {
     public ArtistFragment() {
     }
 
-    public interface Callback {
-        /**
-         * Artist Callback for when an artist has been selected.
-         */
-        public void onItemSelected(String spotifyId, String subTitle);
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,13 +88,7 @@ public class ArtistFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String spotifyId = mArtistAdapter.getItem(position).getSpotifyId();
                 String subtitle = mArtistAdapter.getItem(position).getName();
-
-               /* Intent intent = new Intent(getActivity(), TopTenTracksActivity.class);
-                intent.putExtra(Intent.EXTRA_TEXT, spotifyId);
-                intent.putExtra(Intent.EXTRA_SUBJECT, subtitle);
-                startActivity(intent);*/
-
-                ((Callback) getActivity()).onItemSelected(spotifyId, subtitle);
+                ((ArtistCallback) getActivity()).onArtistSelected(spotifyId, subtitle);
                 mPosition = position;
             }
         });

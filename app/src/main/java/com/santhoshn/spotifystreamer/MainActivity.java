@@ -1,13 +1,18 @@
 package com.santhoshn.spotifystreamer;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.santhoshn.spotifystreamer.track.Track;
 
-public class MainActivity extends ActionBarActivity implements ArtistFragment.Callback {
+import java.util.ArrayList;
+
+
+public class MainActivity extends ActionBarActivity implements ArtistCallback {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     private final String TOPTEN_TRACKS_FRAGEMENT_TAG = "top10_tracks_fragment";
@@ -62,7 +67,7 @@ public class MainActivity extends ActionBarActivity implements ArtistFragment.Ca
     }
 
     @Override
-    public void onItemSelected(String spotifyId, String subTitle) {
+    public void onArtistSelected(String spotifyId, String subTitle) {
         if (mTwoPane) {
             // In two-pane mode, show the top10tracks view in this activity by
             // adding or replacing the top10tracks fragment using a
@@ -82,5 +87,16 @@ public class MainActivity extends ActionBarActivity implements ArtistFragment.Ca
                     .putExtra(TopTenTracksActivityFragment.TRACK_SUBTITLE, subTitle);
             startActivity(intent);
         }
+    }
+
+    @Override
+    public void onTrackSelected(int trackIndex, ArrayList<Track> tracks) {
+        FragmentManager fragmentManager = getFragmentManager();
+        PlayerActivityFragment newFragment = new PlayerActivityFragment();
+        Bundle arguments = new Bundle();
+        arguments.putParcelableArrayList(PlayerActivityFragment.PLAY_LIST, tracks);
+        arguments.putInt(PlayerActivityFragment.TRACK_INDEX, trackIndex);
+        newFragment.setArguments(arguments);
+        newFragment.show(fragmentManager, "player");
     }
 }
