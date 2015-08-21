@@ -87,8 +87,8 @@ public class ArtistFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String spotifyId = mArtistAdapter.getItem(position).getSpotifyId();
-                String subtitle = mArtistAdapter.getItem(position).getName();
-                ((ArtistCallback) getActivity()).onArtistSelected(spotifyId, subtitle);
+                String artistName = mArtistAdapter.getItem(position).getName();
+                ((ArtistCallback) getActivity()).onArtistSelected(spotifyId, artistName);
                 mPosition = position;
             }
         });

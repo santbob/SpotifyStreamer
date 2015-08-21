@@ -31,11 +31,12 @@ import kaaes.spotify.webapi.android.models.Tracks;
 public class TopTenTracksActivityFragment extends Fragment {
 
     public static final String TRACK_SPOTIFY_ID = "trackSpotifyId";
-    public static final String TRACK_SUBTITLE = "subtitle";
+    public static final String ARTIST_NAME = "artistName";
 
     private ArrayList<Track> mTracks = new ArrayList<Track>();
     private TrackListAdapter mTracksAdapter;
     private SpotifyService mSpotifyService = new SpotifyApi().getService();
+    private String mArtistName;
 
     public TopTenTracksActivityFragment() {
     }
@@ -59,9 +60,11 @@ public class TopTenTracksActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         String artistSpotifyId = null;
+        String artistName = null;
         Bundle arguments = getArguments();
         if (arguments != null) {
             artistSpotifyId = arguments.getString(TRACK_SPOTIFY_ID);
+            mArtistName = arguments.getString(ARTIST_NAME);
         }
 
         View rootView = inflater.inflate(R.layout.fragment_top_ten_tracks, container, false);
@@ -106,15 +109,19 @@ public class TopTenTracksActivityFragment extends Fragment {
                 trackList = new ArrayList<Track>();
                 if (results != null && results.tracks != null) {
                     for (int i = 0; i < results.tracks.size(); i++) {
-                        kaaes.spotify.webapi.android.models.Track track = results.tracks.get(i);
+                        kaaes.spotify.webapi.android.models.Track apiTrack = results.tracks.get(i);
                         //initialize the imageUrl with defaultImageUrl
                         String imageUrl = "http://img.santhoshn.com/music.png";
-                        if (track.album != null && track.album.images != null && track.album.images.size() > 0) {
+                        if (apiTrack.album != null && apiTrack.album.images != null && apiTrack.album.images.size() > 0) {
                             //once we know there are images for the artist, pick the first one and update imageUrl.
                             //we can fetch the right size image based on the target device.
-                            imageUrl = track.album.images.get(0).url;
+                            imageUrl = apiTrack.album.images.get(0).url;
                         }
-                        trackList.add(new Track(track.id, track.name, track.album.name, imageUrl));
+                        Track track = new Track(apiTrack.id, apiTrack.name, apiTrack.album.name, imageUrl);
+                        track.setArtistName(apiTrack.artists.get(0).name);
+                        track.setTrackDuration(apiTrack.duration_ms);
+                        track.setTrackUrl(apiTrack.preview_url);
+                        trackList.add(track);
                     }
                 }
             } catch (Exception e) {

@@ -67,13 +67,14 @@ public class MainActivity extends ActionBarActivity implements ArtistCallback {
     }
 
     @Override
-    public void onArtistSelected(String spotifyId, String subTitle) {
+    public void onArtistSelected(String spotifyId, String artistName) {
         if (mTwoPane) {
             // In two-pane mode, show the top10tracks view in this activity by
             // adding or replacing the top10tracks fragment using a
             // fragment transaction.
             Bundle args = new Bundle();
             args.putString(TopTenTracksActivityFragment.TRACK_SPOTIFY_ID, spotifyId);
+            args.putString(TopTenTracksActivityFragment.ARTIST_NAME,artistName);
 
             TopTenTracksActivityFragment fragment = new TopTenTracksActivityFragment();
             fragment.setArguments(args);
@@ -84,7 +85,7 @@ public class MainActivity extends ActionBarActivity implements ArtistCallback {
         } else {
             Intent intent = new Intent(this, TopTenTracksActivity.class)
                     .putExtra(TopTenTracksActivityFragment.TRACK_SPOTIFY_ID, spotifyId)
-                    .putExtra(TopTenTracksActivityFragment.TRACK_SUBTITLE, subTitle);
+                    .putExtra(TopTenTracksActivityFragment.ARTIST_NAME, artistName);
             startActivity(intent);
         }
     }

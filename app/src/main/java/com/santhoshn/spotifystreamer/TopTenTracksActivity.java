@@ -13,11 +13,11 @@ import com.santhoshn.spotifystreamer.track.Track;
 import java.util.ArrayList;
 
 
-public class TopTenTracksActivity extends ActionBarActivity implements TrackCallback {
+public class TopTenTracksActivity extends ActionBarActivity implements ArtistCallback {
 
     private static final String TRACKS_FRAGMENT_TAG = "top_ten_tracks";
     private TopTenTracksActivityFragment mTracksFragment;
-   
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +39,11 @@ public class TopTenTracksActivity extends ActionBarActivity implements TrackCall
                     .add(R.id.topten_tracks_container, fragment)
                     .commit();
         }
+    }
+
+    @Override
+    public void onArtistSelected(String spotifyId, String subTitle) {
+        //do nothing
     }
 
     @Override
@@ -73,8 +78,8 @@ public class TopTenTracksActivity extends ActionBarActivity implements TrackCall
 
     private void setSubTitle() {
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(TopTenTracksActivityFragment.TRACK_SUBTITLE)) {
-            String subTitle = intent.getStringExtra(TopTenTracksActivityFragment.TRACK_SUBTITLE);
+        if (intent != null && intent.hasExtra(TopTenTracksActivityFragment.ARTIST_NAME)) {
+            String subTitle = intent.getStringExtra(TopTenTracksActivityFragment.ARTIST_NAME);
             if (subTitle != null) {
                 ActionBar ab = getSupportActionBar();
                 ab.setSubtitle(subTitle);
