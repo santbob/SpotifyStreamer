@@ -2,7 +2,12 @@ package com.santhoshn.spotifystreamer;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.santhoshn.spotifystreamer.service.MediaPlayerService;
+import com.santhoshn.spotifystreamer.service.MediaPlayerService.MediaPlayerBinder;
 import com.santhoshn.spotifystreamer.track.Track;
 import com.squareup.picasso.Picasso;
 
@@ -27,21 +34,44 @@ public class PlayerActivityFragment extends DialogFragment {
     public static final String TRACK_INDEX = "trackIndex";
     public static final String PLAY_LIST = "playList";
 
-    private View mRootView;
+    private MediaPlayerService mPlayerService;
     private TextView mArtistName;
     private TextView mAlbumName;
     private ImageView mAlbumArtWork;
     private TextView mTrackName;
     private TextView mTrackDuration;
     private SeekBar seekBarView;
-    private TextView finalDuration;
     private ImageButton mPlayPrevBtn;
     private ImageButton mPlayPauseBtn;
     private ImageButton mPlayNextBtn;
     private ArrayList<Track> mTracks;
     private int mPlayingIndex;
     private boolean isPlaying = true;
-    public PlayerActivityFragment() {}
+    private boolean serviceBound = false;
+    private Intent playerIntent;
+    //connect to the service
+    private ServiceConnection mediaConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MediaPlayerBinder binder = (MediaPlayerBinder) service;
+            //get service
+            mPlayerService = binder.getService();
+            //pass track list
+            mPlayerService.setTracks(mTracks);
+            mPlayerService.setTrackIndex(mPlayingIndex);
+            serviceBound = true;
+            startTrack();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            serviceBound = false;
+        }
+    };
+
+    public PlayerActivityFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,6 +82,11 @@ public class PlayerActivityFragment extends DialogFragment {
         if (arguments != null) {
             mTracks = arguments.getParcelableArrayList(PLAY_LIST);
             mPlayingIndex = arguments.getInt(TRACK_INDEX);
+        }
+        if (playerIntent == null) {
+            playerIntent = new Intent(getActivity(), MediaPlayerService.class);
+            getActivity().bindService(playerIntent, mediaConnection, Context.BIND_AUTO_CREATE);
+            getActivity().startService(playerIntent);
         }
 
         View rootView = inflater.inflate(R.layout.fragment_player, container, false);
@@ -83,15 +118,22 @@ public class PlayerActivityFragment extends DialogFragment {
             }
         });
         updateUI();
-        return  rootView;
+        return rootView;
+    }
+
+    @Override
+    public void onDestroy() {
+        getActivity().stopService(playerIntent);
+        mPlayerService = null;
+        super.onDestroy();
     }
 
     /*
         Method which updates the Player with Track at currentIndex
      */
-    public void updateTrackDetails(){
+    public void updateTrackDetails() {
         Track track = mTracks.get(mPlayingIndex);
-        if(track != null) {
+        if (track != null) {
             mArtistName.setText(track.getArtistName());
             mAlbumName.setText(track.getAlbumName());
             Picasso.with(getActivity()).load(track.getThumbnailImageUrl())
@@ -101,6 +143,7 @@ public class PlayerActivityFragment extends DialogFragment {
         }
 
     }
+
     /*
         Format the Duration to mm:ss from given milliseconds
      */
@@ -126,22 +169,22 @@ public class PlayerActivityFragment extends DialogFragment {
         //call updateTracks to update the player with current Index Track
         updateTrackDetails();
         //Disable Prev or Next or both button based on the current Index and number of tracks available
-        if(mPlayingIndex == 0) {
+        if (mPlayingIndex == 0) {
             mPlayPrevBtn.setClickable(false);
         }
-        if (mPlayingIndex == mTracks.size() -1) {
+        if (mPlayingIndex == mTracks.size() - 1) {
             mPlayNextBtn.setClickable(false);
         }
-        if (mPlayingIndex > 0 && mPlayingIndex < mTracks.size() -1){
+        if (mPlayingIndex > 0 && mPlayingIndex < mTracks.size() - 1) {
             mPlayNextBtn.setClickable(true);
             mPlayPrevBtn.setClickable(true);
         }
-        //Switch the play/pause drawables
-        if (isPlaying) {
-            mPlayPauseBtn.setImageResource(android.R.drawable.ic_media_play);
-        } else {
-            mPlayPauseBtn.setImageResource(android.R.drawable.ic_media_pause);
-        }
+    }
+
+    public void startTrack(){
+        mPlayerService.setTrackIndex(mPlayingIndex);
+        mPlayerService.playTrack();
+        updateUI();
     }
 
     /*
@@ -149,7 +192,21 @@ public class PlayerActivityFragment extends DialogFragment {
     */
     public void playPreviousTrack(View view) {
         mPlayingIndex = mPlayingIndex - 1;
-        updateUI();
+        startTrack();
+    }
+
+    /*
+        Play/Pause the track and update the drawable icons
+     */
+    public void playTrack() {
+        //Switch the play/pause drawables
+        if (isPlaying) {
+            mPlayPauseBtn.setImageResource(android.R.drawable.ic_media_play);
+            mPlayerService.resumeTrack();
+        } else {
+            mPlayPauseBtn.setImageResource(android.R.drawable.ic_media_pause);
+            mPlayerService.pauseTrack();
+        }
     }
 
     /*
@@ -157,7 +214,7 @@ public class PlayerActivityFragment extends DialogFragment {
      */
     public void togglePlayandPause(View view) {
         isPlaying = !isPlaying;
-        updateUI();
+        playTrack();
     }
 
     /*
@@ -165,6 +222,6 @@ public class PlayerActivityFragment extends DialogFragment {
      */
     public void playNextTrack(View view) {
         mPlayingIndex = mPlayingIndex + 1;
-        updateUI();
+        startTrack();
     }
 }
