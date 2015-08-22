@@ -49,9 +49,9 @@ public class PlayerActivityFragment extends DialogFragment {
     private boolean isPlaying = true;
     private boolean serviceBound = false;
     private Intent playerIntent;
+
     //connect to the service
     private ServiceConnection mediaConnection = new ServiceConnection() {
-
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             MediaPlayerBinder binder = (MediaPlayerBinder) service;
@@ -181,9 +181,9 @@ public class PlayerActivityFragment extends DialogFragment {
         }
     }
 
-    public void startTrack(){
+    public void startTrack() {
         mPlayerService.setTrackIndex(mPlayingIndex);
-        if(isPlaying) {
+        if (isPlaying) {
             mPlayerService.playTrack();
         }
         updateUI();
@@ -200,7 +200,7 @@ public class PlayerActivityFragment extends DialogFragment {
     /*
         Play/Pause the track and update the drawable icons
      */
-    public void playTrack() {
+    public void playPauseTrack() {
         //Switch the play/pause drawables
         if (isPlaying) {
             mPlayPauseBtn.setImageResource(android.R.drawable.ic_media_pause);
@@ -216,7 +216,7 @@ public class PlayerActivityFragment extends DialogFragment {
      */
     public void togglePlayandPause(View view) {
         isPlaying = !isPlaying;
-        playTrack();
+        playPauseTrack();
     }
 
     /*

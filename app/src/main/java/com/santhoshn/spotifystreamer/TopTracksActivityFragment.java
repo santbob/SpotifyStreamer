@@ -28,7 +28,7 @@ import kaaes.spotify.webapi.android.models.Tracks;
 /**
  * A fragment containing a Top 10 Tracks for selected Artist
  */
-public class TopTenTracksActivityFragment extends Fragment {
+public class TopTracksActivityFragment extends Fragment {
 
     public static final String TRACK_SPOTIFY_ID = "trackSpotifyId";
     public static final String ARTIST_NAME = "artistName";
@@ -38,7 +38,7 @@ public class TopTenTracksActivityFragment extends Fragment {
     private SpotifyService mSpotifyService = new SpotifyApi().getService();
     private String mArtistName;
 
-    public TopTenTracksActivityFragment() {
+    public TopTracksActivityFragment() {
     }
 
     private void fetchTop10Tracks(String artistSpotifyId) {

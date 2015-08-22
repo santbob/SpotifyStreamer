@@ -34,7 +34,7 @@ public class MainActivity extends ActionBarActivity implements ArtistCallback {
             // fragment transaction.
             if (savedInstanceState == null) {
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.topten_tracks_container, new TopTenTracksActivityFragment(), TOPTEN_TRACKS_FRAGEMENT_TAG)
+                        .replace(R.id.topten_tracks_container, new TopTracksActivityFragment(), TOPTEN_TRACKS_FRAGEMENT_TAG)
                         .commit();
             }
         } else {
@@ -73,19 +73,19 @@ public class MainActivity extends ActionBarActivity implements ArtistCallback {
             // adding or replacing the top10tracks fragment using a
             // fragment transaction.
             Bundle args = new Bundle();
-            args.putString(TopTenTracksActivityFragment.TRACK_SPOTIFY_ID, spotifyId);
-            args.putString(TopTenTracksActivityFragment.ARTIST_NAME,artistName);
+            args.putString(TopTracksActivityFragment.TRACK_SPOTIFY_ID, spotifyId);
+            args.putString(TopTracksActivityFragment.ARTIST_NAME,artistName);
 
-            TopTenTracksActivityFragment fragment = new TopTenTracksActivityFragment();
+            TopTracksActivityFragment fragment = new TopTracksActivityFragment();
             fragment.setArguments(args);
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.topten_tracks_container, fragment, TOPTEN_TRACKS_FRAGEMENT_TAG)
                     .commit();
         } else {
-            Intent intent = new Intent(this, TopTenTracksActivity.class)
-                    .putExtra(TopTenTracksActivityFragment.TRACK_SPOTIFY_ID, spotifyId)
-                    .putExtra(TopTenTracksActivityFragment.ARTIST_NAME, artistName);
+            Intent intent = new Intent(this, TopTracksActivity.class)
+                    .putExtra(TopTracksActivityFragment.TRACK_SPOTIFY_ID, spotifyId)
+                    .putExtra(TopTracksActivityFragment.ARTIST_NAME, artistName);
             startActivity(intent);
         }
     }

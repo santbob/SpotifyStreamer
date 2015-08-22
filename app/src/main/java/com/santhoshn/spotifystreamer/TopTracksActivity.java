@@ -13,10 +13,10 @@ import com.santhoshn.spotifystreamer.track.Track;
 import java.util.ArrayList;
 
 
-public class TopTenTracksActivity extends ActionBarActivity implements ArtistCallback {
+public class TopTracksActivity extends ActionBarActivity implements ArtistCallback {
 
     private static final String TRACKS_FRAGMENT_TAG = "top_ten_tracks";
-    private TopTenTracksActivityFragment mTracksFragment;
+    private TopTracksActivityFragment mTracksFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +28,11 @@ public class TopTenTracksActivity extends ActionBarActivity implements ArtistCal
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
-            String spotifyId = getIntent().getStringExtra(TopTenTracksActivityFragment.TRACK_SPOTIFY_ID);
+            String spotifyId = getIntent().getStringExtra(TopTracksActivityFragment.TRACK_SPOTIFY_ID);
             Bundle arguments = new Bundle();
-            arguments.putString(TopTenTracksActivityFragment.TRACK_SPOTIFY_ID, spotifyId);
+            arguments.putString(TopTracksActivityFragment.TRACK_SPOTIFY_ID, spotifyId);
 
-            TopTenTracksActivityFragment fragment = new TopTenTracksActivityFragment();
+            TopTracksActivityFragment fragment = new TopTracksActivityFragment();
             fragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
@@ -78,8 +78,8 @@ public class TopTenTracksActivity extends ActionBarActivity implements ArtistCal
 
     private void setSubTitle() {
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(TopTenTracksActivityFragment.ARTIST_NAME)) {
-            String subTitle = intent.getStringExtra(TopTenTracksActivityFragment.ARTIST_NAME);
+        if (intent != null && intent.hasExtra(TopTracksActivityFragment.ARTIST_NAME)) {
+            String subTitle = intent.getStringExtra(TopTracksActivityFragment.ARTIST_NAME);
             if (subTitle != null) {
                 ActionBar ab = getSupportActionBar();
                 ab.setSubtitle(subTitle);
