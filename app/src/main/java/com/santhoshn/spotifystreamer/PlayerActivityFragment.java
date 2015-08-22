@@ -183,7 +183,9 @@ public class PlayerActivityFragment extends DialogFragment {
 
     public void startTrack(){
         mPlayerService.setTrackIndex(mPlayingIndex);
-        mPlayerService.playTrack();
+        if(isPlaying) {
+            mPlayerService.playTrack();
+        }
         updateUI();
     }
 
@@ -201,10 +203,10 @@ public class PlayerActivityFragment extends DialogFragment {
     public void playTrack() {
         //Switch the play/pause drawables
         if (isPlaying) {
-            mPlayPauseBtn.setImageResource(android.R.drawable.ic_media_play);
+            mPlayPauseBtn.setImageResource(android.R.drawable.ic_media_pause);
             mPlayerService.resumeTrack();
         } else {
-            mPlayPauseBtn.setImageResource(android.R.drawable.ic_media_pause);
+            mPlayPauseBtn.setImageResource(android.R.drawable.ic_media_play);
             mPlayerService.pauseTrack();
         }
     }
