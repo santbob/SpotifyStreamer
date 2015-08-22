@@ -16,6 +16,7 @@ import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import com.santhoshn.spotifystreamer.service.MediaPlayerService;
@@ -24,10 +25,9 @@ import com.santhoshn.spotifystreamer.track.Track;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 /**
- * A placeholder fragment containing a simple view.
+ * A Dialog Fragment which acts as Media Player
  */
 public class PlayerActivityFragment extends DialogFragment {
 
@@ -40,7 +40,7 @@ public class PlayerActivityFragment extends DialogFragment {
     private ImageView mAlbumArtWork;
     private TextView mTrackName;
     private TextView mTrackDuration;
-    private SeekBar seekBarView;
+    private SeekBar seekBar;
     private ImageButton mPlayPrevBtn;
     private ImageButton mPlayPauseBtn;
     private ImageButton mPlayNextBtn;
@@ -94,7 +94,28 @@ public class PlayerActivityFragment extends DialogFragment {
         mAlbumName = (TextView) rootView.findViewById(R.id.playing_album_name);
         mAlbumArtWork = (ImageView) rootView.findViewById(R.id.playing_album_artwork);
         mTrackName = (TextView) rootView.findViewById(R.id.playing_track_name);
-        seekBarView = (SeekBar) rootView.findViewById(R.id.scrubBar);
+        seekBar = (SeekBar) rootView.findViewById(R.id.scrubBar);
+
+        seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+               //do nothing
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                //do nothing
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
+                if(fromUser) {
+                    int completedTime = Utilities.getCompletedTime(progress, mPlayerService.getTrackDuration());
+                    mPlayerService.seekDuration(completedTime);
+                }
+            }
+        });
+
         mTrackDuration = (TextView) rootView.findViewById(R.id.track_duration);
         mPlayPrevBtn = (ImageButton) rootView.findViewById(R.id.play_previous_btn);
         mPlayPrevBtn.setOnClickListener(new OnClickListener() {
@@ -117,7 +138,6 @@ public class PlayerActivityFragment extends DialogFragment {
                 playNextTrack(arg0);
             }
         });
-        updateUI();
         return rootView;
     }
 
@@ -139,19 +159,8 @@ public class PlayerActivityFragment extends DialogFragment {
             Picasso.with(getActivity()).load(track.getThumbnailImageUrl())
                     .into(mAlbumArtWork);
             mTrackName.setText(track.getTrackName());
-            mTrackDuration.setText(getFormatedTime(track.getTrackDuration()));
+            mTrackDuration.setText(Utilities.getFormatedTime(30000));
         }
-
-    }
-
-    /*
-        Format the Duration to mm:ss from given milliseconds
-     */
-    private String getFormatedTime(long milliSeconds) {
-        return String.format("%d:%d",
-                TimeUnit.MILLISECONDS.toMinutes(milliSeconds),
-                TimeUnit.MILLISECONDS.toSeconds(milliSeconds) -
-                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliSeconds)));
     }
 
     @Override
@@ -193,6 +202,7 @@ public class PlayerActivityFragment extends DialogFragment {
        Method to be called to reduce the Playing Index by 1 so previous track could be played
     */
     public void playPreviousTrack(View view) {
+        syncTrackIndex();
         mPlayingIndex = mPlayingIndex - 1;
         startTrack();
     }
@@ -223,7 +233,12 @@ public class PlayerActivityFragment extends DialogFragment {
         Method to be called to up the Playing Index so next track could be played
      */
     public void playNextTrack(View view) {
+        syncTrackIndex();
         mPlayingIndex = mPlayingIndex + 1;
         startTrack();
+    }
+
+    public void syncTrackIndex() {
+        mPlayingIndex = mPlayerService.getTrackIndex();
     }
 }

@@ -20,7 +20,6 @@ import java.util.ArrayList;
  */
 public class MediaPlayerService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener {
-    private static final String ACTION_PLAY = "com.example.action.PLAY";
     private final IBinder mediaBinder = new MediaPlayerBinder();
 
     MediaPlayer mMediaPlayer = null;
@@ -55,6 +54,17 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         mTrackIndex = trackIndex;
     }
 
+    public int getTrackIndex() {
+        return mTrackIndex;
+    }
+
+    public int getTrackDuration() {
+        return mMediaPlayer.getDuration();
+    }
+    public MediaPlayer getPlayer(){
+        return mMediaPlayer;
+    }
+
     /**
      * Called when MediaPlayer is ready
      */
@@ -76,17 +86,28 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     @Override
+    public void onDestroy() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.release();
+        }
+    }
+
+
+    @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         return false;
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        if(mTrackIndex != mTraks.size() - 1) {
 
+        }
     }
 
     public void playTrack() {
         mMediaPlayer.reset();
+        mMediaPlayer.seekTo(0);
         Track track = mTraks.get(mTrackIndex);
         try{
             mMediaPlayer.setDataSource(getApplicationContext(), Uri.parse(track.getTrackUrl()));
@@ -108,8 +129,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         }
     }
 
-    public void seekDuration(int untilDuration) {
-
+    public void seekDuration(int untilMilli) {
+        mMediaPlayer.seekTo(untilMilli);
     }
 
     public class MediaPlayerBinder extends Binder {
