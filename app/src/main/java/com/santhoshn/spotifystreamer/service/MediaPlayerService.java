@@ -30,6 +30,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     int mTrackIndex;
     boolean trackLoaded = false;
+    int mCompleted = 0;
 
     public static final int TRACK_COMPLETED = 0;
 
@@ -65,6 +66,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         mReceiver = rec;
     }
 
+    public void setCompleted(int completed) {
+        mCompleted = completed;
+    }
+
     public int getTrackIndex() {
         return mTrackIndex;
     }
@@ -78,6 +83,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
      */
     public void onPrepared(MediaPlayer player) {
         player.start();
+        mMediaPlayer.seekTo(mCompleted);
+        mCompleted = 0;
     }
 
     @Nullable
@@ -125,7 +132,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     public void playTrack() {
         trackLoaded = false;
         mMediaPlayer.reset();
-        mMediaPlayer.seekTo(0);
         Track track = mTraks.get(mTrackIndex);
         try{
             mMediaPlayer.setDataSource(getApplicationContext(), Uri.parse(track.getTrackUrl()));

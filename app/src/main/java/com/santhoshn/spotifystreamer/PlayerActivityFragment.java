@@ -42,6 +42,8 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
     public static final String PLAY_LIST = "playList";
 
     private static final String SHARE_HASHTAG = "#SpotifyStreamerApp ";
+    private static final String PLAYING_INDEX = "playingIndex";
+    private static final String SEEK_TO = "seekTo";
 
     private ShareActionProvider mShareActionProvider;
 
@@ -60,7 +62,10 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
     private ImageButton mPlayPauseBtn;
     private ImageButton mPlayNextBtn;
     private ArrayList<Track> mTracks;
+
     private int mPlayingIndex;
+    private int mSeekTo;
+
     private boolean isPlaying = true;
     private boolean serviceBound = false;
     private Intent playerIntent;
@@ -92,6 +97,7 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
             mPlayerService.setTracks(mTracks);
             mPlayerService.setTrackIndex(mPlayingIndex);
             mPlayerService.setReceiver(mReceiver);
+            mPlayerService.setCompleted(mSeekTo);
             serviceBound = true;
             startTrack();
         }
@@ -104,13 +110,6 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
 
     public PlayerActivityFragment() {}
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // retain this fragment
-        setRetainInstance(true);
-        setHasOptionsMenu(true);
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -130,13 +129,19 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
             getActivity().startService(playerIntent);
         }
 
+        if (savedInstanceState != null && savedInstanceState.containsKey(PLAYING_INDEX)) {
+            mPlayingIndex = savedInstanceState.getInt(PLAYING_INDEX);
+            if(savedInstanceState.containsKey(SEEK_TO)){
+                mSeekTo = savedInstanceState.getInt(SEEK_TO);
+            }
+        }
+
         View rootView = inflater.inflate(R.layout.fragment_player, container, false);
         mArtistName = (TextView) rootView.findViewById(R.id.playing_artist_name);
         mAlbumName = (TextView) rootView.findViewById(R.id.playing_album_name);
         mAlbumArtWork = (ImageView) rootView.findViewById(R.id.playing_album_artwork);
         mTrackName = (TextView) rootView.findViewById(R.id.playing_track_name);
         seekBar = (SeekBar) rootView.findViewById(R.id.scrubBar);
-
         seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
@@ -323,4 +328,19 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
            }
         }
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        // When tablets rotate, the currently selected list item needs to be saved.
+        // When no item is selected, mPosition will be set to Listview.INVALID_POSITION,
+        // so check for that before storing.
+        if (mPlayingIndex != -1) {
+            outState.putInt(PLAYING_INDEX, mPlayingIndex);
+            if (mPlayerService != null && mPlayerService.getPlayer() != null) {
+                outState.putInt(SEEK_TO, mPlayerService.getPlayer().getCurrentPosition());
+            }
+        }
+        super.onSaveInstanceState(outState);
+    }
+
 }
