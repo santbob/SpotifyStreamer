@@ -72,8 +72,6 @@ public class TopTracksActivity extends ActionBarActivity implements ArtistCallba
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
-        } else if (id == R.id.action_share) {
-            return true;
         }
         return super.onOptionsItemSelected(item);
     }
