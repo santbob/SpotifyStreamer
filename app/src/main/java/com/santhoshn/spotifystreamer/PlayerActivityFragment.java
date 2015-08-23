@@ -18,7 +18,9 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+import android.os.Handler;
 
+import com.santhoshn.spotifystreamer.service.MediaPlayerReceiver;
 import com.santhoshn.spotifystreamer.service.MediaPlayerService;
 import com.santhoshn.spotifystreamer.service.MediaPlayerService.MediaPlayerBinder;
 import com.santhoshn.spotifystreamer.track.Track;
@@ -29,12 +31,15 @@ import java.util.ArrayList;
 /**
  * A Dialog Fragment which acts as Media Player
  */
-public class PlayerActivityFragment extends DialogFragment {
+public class PlayerActivityFragment extends DialogFragment implements MediaPlayerReceiver.Receiver {
 
     public static final String TRACK_INDEX = "trackIndex";
     public static final String PLAY_LIST = "playList";
 
+    private Handler mHandler = new Handler();
     private MediaPlayerService mPlayerService;
+    private MediaPlayerReceiver mReceiver;
+
     private TextView mArtistName;
     private TextView mAlbumName;
     private ImageView mAlbumArtWork;
@@ -50,6 +55,20 @@ public class PlayerActivityFragment extends DialogFragment {
     private boolean serviceBound = false;
     private Intent playerIntent;
 
+    private Runnable mUpdateTimeTask = new Runnable() {
+        @Override
+        public void run() {
+            if(mPlayerService != null){
+                if(mPlayerService.getPlayer() != null) {
+                    if(mPlayerService.getPlayer().isPlaying()) {
+                        int progress = Utilities.getProgressPercentage(mPlayerService.getPlayer().getCurrentPosition(), mPlayerService.getPlayer().getDuration());
+                        seekBar.setProgress(progress);
+                    }
+                }
+            }
+            mHandler.postDelayed(this, 500);
+        }
+    };
     //connect to the service
     private ServiceConnection mediaConnection = new ServiceConnection() {
         @Override
@@ -60,6 +79,7 @@ public class PlayerActivityFragment extends DialogFragment {
             //pass track list
             mPlayerService.setTracks(mTracks);
             mPlayerService.setTrackIndex(mPlayingIndex);
+            mPlayerService.setReceiver(mReceiver);
             serviceBound = true;
             startTrack();
         }
@@ -70,14 +90,16 @@ public class PlayerActivityFragment extends DialogFragment {
         }
     };
 
-    public PlayerActivityFragment() {
-    }
+
+    public PlayerActivityFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout to use as dialog or embedded fragment
         //return inflater.inflate(R.layout.fragment_player, container, false);
+        mReceiver = new MediaPlayerReceiver(new Handler());
+        mReceiver.setReceiver(this);
         Bundle arguments = getArguments();
         if (arguments != null) {
             mTracks = arguments.getParcelableArrayList(PLAY_LIST);
@@ -99,19 +121,20 @@ public class PlayerActivityFragment extends DialogFragment {
         seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-               //do nothing
+                mHandler.removeCallbacks(mUpdateTimeTask);
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                //do nothing
+                mHandler.removeCallbacks(mUpdateTimeTask);
             }
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
-                if(fromUser) {
-                    int completedTime = Utilities.getCompletedTime(progress, mPlayerService.getTrackDuration());
+                if(fromUser && mPlayerService != null && mPlayerService.getPlayer() != null) {
+                    int completedTime = Utilities.getCompletedTime(progress, mPlayerService.getPlayer().getDuration());
                     mPlayerService.seekDuration(completedTime);
+                    updateProgressBar();
                 }
             }
         });
@@ -190,8 +213,15 @@ public class PlayerActivityFragment extends DialogFragment {
         }
     }
 
+    public void updateProgressBar() {
+        mHandler.postDelayed(mUpdateTimeTask, 100);
+    }
+
     public void startTrack() {
+        seekBar.setProgress(0);
         mPlayerService.setTrackIndex(mPlayingIndex);
+        mHandler.removeCallbacks(mUpdateTimeTask);
+        updateProgressBar();
         if (isPlaying) {
             mPlayerService.playTrack();
         }
@@ -202,7 +232,6 @@ public class PlayerActivityFragment extends DialogFragment {
        Method to be called to reduce the Playing Index by 1 so previous track could be played
     */
     public void playPreviousTrack(View view) {
-        syncTrackIndex();
         mPlayingIndex = mPlayingIndex - 1;
         startTrack();
     }
@@ -233,12 +262,17 @@ public class PlayerActivityFragment extends DialogFragment {
         Method to be called to up the Playing Index so next track could be played
      */
     public void playNextTrack(View view) {
-        syncTrackIndex();
         mPlayingIndex = mPlayingIndex + 1;
         startTrack();
     }
 
-    public void syncTrackIndex() {
-        mPlayingIndex = mPlayerService.getTrackIndex();
+
+    @Override
+    public void onReceiveResult(int resultCode, Bundle resultData) {
+        if(resultCode == MediaPlayerService.TRACK_COMPLETED) {
+           if(mPlayingIndex < mTracks.size() - 1) {
+               playNextTrack(null);
+           }
+        }
     }
 }

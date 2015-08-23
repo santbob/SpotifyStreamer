@@ -9,6 +9,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
+import android.os.ResultReceiver;
 import android.util.Log;
 
 import com.santhoshn.spotifystreamer.track.Track;
@@ -19,12 +20,18 @@ import java.util.ArrayList;
  * Created by santhosh on 21/08/15.
  */
 public class MediaPlayerService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
-        MediaPlayer.OnCompletionListener {
+        MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener {
+
     private final IBinder mediaBinder = new MediaPlayerBinder();
 
     MediaPlayer mMediaPlayer = null;
+    ResultReceiver mReceiver = null;
     ArrayList<Track> mTraks;
+
     int mTrackIndex;
+    boolean trackLoaded = false;
+
+    public static final int TRACK_COMPLETED = 0;
 
 
     public void onCreate() {
@@ -44,6 +51,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         mMediaPlayer.setOnPreparedListener(this);
         mMediaPlayer.setOnCompletionListener(this);
         mMediaPlayer.setOnErrorListener(this);
+        mMediaPlayer.setOnSeekCompleteListener(this);
     }
 
     public void setTracks(ArrayList<Track> tracks) {
@@ -54,13 +62,14 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         mTrackIndex = trackIndex;
     }
 
+    public void setReceiver(ResultReceiver rec) {
+        mReceiver = rec;
+    }
+
     public int getTrackIndex() {
         return mTrackIndex;
     }
 
-    public int getTrackDuration() {
-        return mMediaPlayer.getDuration();
-    }
     public MediaPlayer getPlayer(){
         return mMediaPlayer;
     }
@@ -92,6 +101,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         }
     }
 
+    @Override
+    public void onSeekComplete(MediaPlayer mp) {
+        if (mMediaPlayer != null && mReceiver != null) {
+            mReceiver.send(TRACK_COMPLETED, null);
+        }
+    }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
@@ -100,9 +115,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        if(mTrackIndex != mTraks.size() - 1) {
-
-        }
+       if(trackLoaded) {
+           mReceiver.send(TRACK_COMPLETED, null);
+           trackLoaded = false;
+       } else {
+           trackLoaded = true;
+       }
     }
 
     public void playTrack() {
