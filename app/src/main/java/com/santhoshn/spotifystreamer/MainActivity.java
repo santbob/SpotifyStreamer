@@ -60,8 +60,10 @@ public class MainActivity extends ActionBarActivity implements ArtistCallback {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -74,7 +76,7 @@ public class MainActivity extends ActionBarActivity implements ArtistCallback {
             // fragment transaction.
             Bundle args = new Bundle();
             args.putString(TopTracksActivityFragment.TRACK_SPOTIFY_ID, spotifyId);
-            args.putString(TopTracksActivityFragment.ARTIST_NAME,artistName);
+            args.putString(TopTracksActivityFragment.ARTIST_NAME, artistName);
 
             TopTracksActivityFragment fragment = new TopTracksActivityFragment();
             fragment.setArguments(args);

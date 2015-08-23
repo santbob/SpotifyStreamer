@@ -24,7 +24,6 @@ import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.Tracks;
 
-
 /**
  * A fragment containing a Top 10 Tracks for selected Artist
  */
@@ -36,6 +35,7 @@ public class TopTracksActivityFragment extends Fragment {
     private ArrayList<Track> mTracks = new ArrayList<Track>();
     private TrackListAdapter mTracksAdapter;
     private SpotifyService mSpotifyService = new SpotifyApi().getService();
+    
     private String mArtistName;
 
     public TopTracksActivityFragment() {
@@ -53,6 +53,7 @@ public class TopTracksActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // retain this fragment
         setRetainInstance(true);
+        setHasOptionsMenu(true);
     }
 
 
@@ -82,7 +83,7 @@ public class TopTracksActivityFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                try{
+                try {
                     ((ArtistCallback) getActivity()).onTrackSelected(position, mTracks);
                 } catch (Exception e) {
                     System.out.println(e);
@@ -104,7 +105,7 @@ public class TopTracksActivityFragment extends Fragment {
 
             try {
                 final Map<String, Object> options = new HashMap<String, Object>();
-                options.put(SpotifyService.COUNTRY, "US");
+                options.put(SpotifyService.COUNTRY, Utilities.getCountry(getActivity()));
                 Tracks results = mSpotifyService.getArtistTopTrack(params[0], options);
                 trackList = new ArrayList<Track>();
                 if (results != null && results.tracks != null) {

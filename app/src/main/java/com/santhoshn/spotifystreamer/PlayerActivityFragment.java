@@ -8,7 +8,12 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -36,9 +41,14 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
     public static final String TRACK_INDEX = "trackIndex";
     public static final String PLAY_LIST = "playList";
 
+    private static final String SHARE_HASHTAG = "#SpotifyStreamerApp ";
+
+    private ShareActionProvider mShareActionProvider;
+
     private Handler mHandler = new Handler();
     private MediaPlayerService mPlayerService;
     private MediaPlayerReceiver mReceiver;
+
 
     private TextView mArtistName;
     private TextView mAlbumName;
@@ -54,6 +64,8 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
     private boolean isPlaying = true;
     private boolean serviceBound = false;
     private Intent playerIntent;
+
+    private String mNowPlaying;
 
     private Runnable mUpdateTimeTask = new Runnable() {
         @Override
@@ -90,8 +102,15 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
         }
     };
 
-
     public PlayerActivityFragment() {}
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // retain this fragment
+        setRetainInstance(true);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -121,7 +140,7 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
         seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                mHandler.removeCallbacks(mUpdateTimeTask);
+               // mHandler.removeCallbacks(mUpdateTimeTask);
             }
 
             @Override
@@ -165,6 +184,31 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_player, menu);
+
+        // Retrieve the share menu item
+        MenuItem menuItem = menu.findItem(R.id.action_share);
+
+        // Get the provider and hold onto it to set/change the share intent.
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+        // If onLoadFinished happens before this, we can go ahead and set the share intent now.
+        if (mTracks != null && mNowPlaying != null) {
+            mShareActionProvider.setShareIntent(createShareNowPlayingIntent());
+        }
+    }
+
+    private Intent createShareNowPlayingIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, SHARE_HASHTAG + mNowPlaying);
+        return shareIntent;
+    }
+
+    @Override
     public void onDestroy() {
         getActivity().stopService(playerIntent);
         mPlayerService = null;
@@ -183,6 +227,10 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
                     .into(mAlbumArtWork);
             mTrackName.setText(track.getTrackName());
             mTrackDuration.setText(Utilities.getFormatedTime(30000));
+            mNowPlaying = "#NowPlaying " + track.getTrackUrl();
+            if(mShareActionProvider != null) {
+                mShareActionProvider.setShareIntent(createShareNowPlayingIntent());
+            }
         }
     }
 

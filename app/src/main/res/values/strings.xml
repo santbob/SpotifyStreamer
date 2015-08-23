@@ -1,11 +1,33 @@
 <resources>
     <string name="app_name">Spotify Streamer</string>
-    <string name="action_settings">Settings</string>
+
     <string name="title_activity_top_ten_tracks">Top 10 Tracks</string>
     <string name="error_empty_artist_search_result">There are no artist matching the search, please change the search</string>
     <string name="error_empty_top10_tracks_search_result">There are no top 10 tracks for the artist</string>
     <string name="error_null_result_for_artist">Invalid Artists Search</string>
     <string name="error_null_result_for_tracks">Invalid Top 10 tracks Search</string>
     <string name="title_activity_player">PlayerActivity</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="action_share">Share</string>
+    <string name="action_now_playing">Now Playing</string>
+
+    <string name="track_start_time">0:00</string>
+
+    <string name="pref_country_label">Country</string>
+    <string name="pref_country_key">countryCode</string>
+    <string name="pref_country_default_value">US</string>
+
+    <string name="pref_enable_notification_drawer_label">Enable Drawer Notification</string>
+    <string name="pref_enable_notification_drawer_key">enableDrawerNotification</string>
+    <string name="pref_enable_notification_drawer_default_value" translatable="false">true</string>
+
+    <string name="pref_enable_notification_lockscreen_label">Enable LockScreen Notification</string>
+    <string name="pref_enable_notification_lockscreen_key">enableLockScreenNotification</string>
+    <string name="pref_enable_notification_lockscreen_default_value" translatable="false">true</string>
+
+    <string name="pref_enabled_text">Enabled</string>
+    <string name="pref_not_enabled_text">Not Enabled</string>
+
 </resources>

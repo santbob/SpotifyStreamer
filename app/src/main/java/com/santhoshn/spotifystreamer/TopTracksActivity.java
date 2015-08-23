@@ -57,7 +57,7 @@ public class TopTracksActivity extends ActionBarActivity implements ArtistCallba
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_top_ten_tracks, menu);
+        getMenuInflater().inflate(R.menu.menu_top_tracks, menu);
         return true;
     }
 
@@ -70,9 +70,11 @@ public class TopTracksActivity extends ActionBarActivity implements ArtistCallba
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        } else if (id == R.id.action_share) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 

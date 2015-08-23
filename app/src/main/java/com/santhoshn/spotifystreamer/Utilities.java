@@ -1,5 +1,9 @@
 package com.santhoshn.spotifystreamer;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -31,5 +35,23 @@ public class Utilities {
      * */
     public static int getCompletedTime(int progress, int totalDuration) {
         return (int)(totalDuration * progress)/100;
+    }
+
+    public static String getCountry(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(context.getString(R.string.pref_country_key),
+                context.getString(R.string.pref_country_default_value));
+    }
+
+    public static boolean isLockScreenNotificationEnabled(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(context.getString(R.string.pref_enable_notification_lockscreen_key),
+                Boolean.valueOf(context.getString(R.string.pref_enable_notification_lockscreen_default_value)));
+    }
+
+    public static boolean isDrawerNotificationEnabled(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getBoolean(context.getString(R.string.pref_enable_notification_drawer_key),
+                Boolean.valueOf(context.getString(R.string.pref_enable_notification_drawer_default_value)));
     }
 }

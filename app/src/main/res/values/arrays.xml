@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="countryNames">
+        <item name="US">United States</item>
+        <item name="GB">United Kingdom</item>
+        <item name="AU">Australia</item>
+        <item name="CA">Canada</item>
+        <item name="ES">Spain</item>
+    </string-array>
+    <string-array name="countryCodes">
+        <item name="US">US</item>
+        <item name="GB">GB</item>
+        <item name="AU">AU</item>
+        <item name="CA">CA</item>
+        <item name="ES">ES</item>
+    </string-array>
+</resources>

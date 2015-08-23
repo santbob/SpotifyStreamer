@@ -28,6 +28,14 @@
                 android:value="com.santhoshn.spotifystreamer.MainActivity" />
         </activity>
         <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.santhoshn.spotifystreamer.MainActivity" />
+        </activity>
+        <activity
             android:name=".PlayerActivity"
             android:label="@string/title_activity_player" >
         </activity>
