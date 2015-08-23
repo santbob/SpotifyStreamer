@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * Created by santhosh on 21/08/15.
  */
 public class MediaPlayerService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
-        MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener {
+        MediaPlayer.OnCompletionListener {
 
     private final IBinder mediaBinder = new MediaPlayerBinder();
 
@@ -51,7 +51,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         mMediaPlayer.setOnPreparedListener(this);
         mMediaPlayer.setOnCompletionListener(this);
         mMediaPlayer.setOnErrorListener(this);
-        mMediaPlayer.setOnSeekCompleteListener(this);
     }
 
     public void setTracks(ArrayList<Track> tracks) {
@@ -101,12 +100,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         }
     }
 
-    @Override
-    public void onSeekComplete(MediaPlayer mp) {
-        if (mMediaPlayer != null && mReceiver != null) {
-            mReceiver.send(TRACK_COMPLETED, null);
-        }
-    }
+//    @Override
+//    public void onSeekComplete(MediaPlayer mp) {
+//        if (mMediaPlayer != null && mReceiver != null) {
+//            mReceiver.send(TRACK_COMPLETED, null);
+//        }
+//    }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
@@ -124,6 +123,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     }
 
     public void playTrack() {
+        trackLoaded = false;
         mMediaPlayer.reset();
         mMediaPlayer.seekTo(0);
         Track track = mTraks.get(mTrackIndex);

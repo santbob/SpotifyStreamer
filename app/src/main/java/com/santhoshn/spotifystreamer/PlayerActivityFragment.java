@@ -214,7 +214,7 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
     }
 
     public void updateProgressBar() {
-        mHandler.postDelayed(mUpdateTimeTask, 100);
+        mHandler.postDelayed(mUpdateTimeTask, 500);
     }
 
     public void startTrack() {
