@@ -143,7 +143,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     public void resumeTrack() {
         if(!mMediaPlayer.isPlaying()) {
-            playTrack();
+            mMediaPlayer.start();
         }
     }
 
