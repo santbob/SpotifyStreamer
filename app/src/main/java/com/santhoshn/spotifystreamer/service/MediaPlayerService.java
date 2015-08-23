@@ -85,6 +85,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         player.start();
         mMediaPlayer.seekTo(mCompleted);
         mCompleted = 0;
+        trackLoaded = true;
     }
 
     @Nullable
