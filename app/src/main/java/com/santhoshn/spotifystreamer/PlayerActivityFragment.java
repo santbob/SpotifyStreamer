@@ -117,6 +117,7 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
     };
 
     public PlayerActivityFragment() {
+        setHasOptionsMenu(true);
     }
 
 

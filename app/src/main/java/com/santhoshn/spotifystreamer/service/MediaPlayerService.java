@@ -31,6 +31,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     int mTrackIndex;
     boolean trackLoaded = false;
     int mCompleted = 0;
+    int pausedIndex;
 
     public static final int TRACK_COMPLETED = 0;
 
@@ -144,13 +145,18 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     public void pauseTrack() {
         if(mMediaPlayer.isPlaying()) {
+            pausedIndex = mTrackIndex;
             mMediaPlayer.pause();
         }
     }
 
     public void resumeTrack() {
         if(!mMediaPlayer.isPlaying()) {
-            mMediaPlayer.start();
+            if(pausedIndex == mTrackIndex) {
+                mMediaPlayer.start();
+            } else {
+                playTrack();
+            }
         }
     }
 
