@@ -15,9 +15,6 @@ import java.util.ArrayList;
 
 public class TopTracksActivity extends ActionBarActivity implements ArtistCallback {
 
-    private static final String TRACKS_FRAGMENT_TAG = "top_ten_tracks";
-    private TopTracksActivityFragment mTracksFragment;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

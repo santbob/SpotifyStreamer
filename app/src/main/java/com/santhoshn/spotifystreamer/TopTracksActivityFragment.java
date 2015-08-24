@@ -36,8 +36,6 @@ public class TopTracksActivityFragment extends Fragment {
     private ArrayList<Track> mTracks = new ArrayList<Track>();
     private TrackListAdapter mTracksAdapter;
     private SpotifyService mSpotifyService = new SpotifyApi().getService();
-    
-    private String mArtistName;
 
     public TopTracksActivityFragment() {
     }
@@ -66,7 +64,6 @@ public class TopTracksActivityFragment extends Fragment {
         Bundle arguments = getArguments();
         if (arguments != null) {
             artistSpotifyId = arguments.getString(TRACK_SPOTIFY_ID);
-            mArtistName = arguments.getString(ARTIST_NAME);
         }
 
         View rootView = inflater.inflate(R.layout.fragment_top_ten_tracks, container, false);
