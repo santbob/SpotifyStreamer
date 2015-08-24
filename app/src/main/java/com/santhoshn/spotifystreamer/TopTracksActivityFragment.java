@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -84,7 +85,7 @@ public class TopTracksActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
-                    ((ArtistCallback) getActivity()).onTrackSelected(position, mTracks);
+                    ((ArtistCallback) getActivity()).onTrackSelected(position, mTracks, 0);
                 } catch (Exception e) {
                     System.out.println(e);
                 }
@@ -92,6 +93,21 @@ public class TopTracksActivityFragment extends Fragment {
         });
         return rootView;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_now_playing) {
+            ((ArtistCallback) getActivity()).onTrackSelected(0, mTracks, -1);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
     private class FetchTracksTask extends AsyncTask<String, Void, List> {
         private final String LOG_TAG = FetchTracksTask.class.getSimpleName();

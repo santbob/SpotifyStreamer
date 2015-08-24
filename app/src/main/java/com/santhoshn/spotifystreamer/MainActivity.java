@@ -16,6 +16,7 @@ public class MainActivity extends ActionBarActivity implements ArtistCallback {
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     private final String TOPTEN_TRACKS_FRAGEMENT_TAG = "top10_tracks_fragment";
+    private final String PLAYER_FRAGMENT_TAG = "player";
     private ArtistFragment mArtistFragment;
     private boolean mTwoPane;
 
@@ -93,13 +94,24 @@ public class MainActivity extends ActionBarActivity implements ArtistCallback {
     }
 
     @Override
-    public void onTrackSelected(int trackIndex, ArrayList<Track> tracks) {
+    public void onTrackSelected(int trackIndex, ArrayList<Track> tracks, int seekUntil) {
         FragmentManager fragmentManager = getFragmentManager();
-        PlayerActivityFragment newFragment = new PlayerActivityFragment();
+        PlayerActivityFragment newFragment = (PlayerActivityFragment) fragmentManager.findFragmentByTag(PLAYER_FRAGMENT_TAG);
+        if (newFragment == null) {
+            newFragment = new PlayerActivityFragment();
+        }
         Bundle arguments = new Bundle();
         arguments.putParcelableArrayList(PlayerActivityFragment.PLAY_LIST, tracks);
         arguments.putInt(PlayerActivityFragment.TRACK_INDEX, trackIndex);
+        arguments.putInt(PlayerActivityFragment.SEEK_TO, seekUntil);
+
+        //if seekUntil is -1 its means just show whats playing.
+        if(seekUntil == PlayerActivityFragment.INVALID_INDEX) {
+            arguments.putBoolean(PlayerActivityFragment.IS_SHOW_NOW_PLAYING, true);
+        } else {
+            arguments.putBoolean(PlayerActivityFragment.IS_SHOW_NOW_PLAYING, false);
+        }
         newFragment.setArguments(arguments);
-        newFragment.show(fragmentManager, "player");
+        newFragment.show(fragmentManager, PLAYER_FRAGMENT_TAG);
     }
 }

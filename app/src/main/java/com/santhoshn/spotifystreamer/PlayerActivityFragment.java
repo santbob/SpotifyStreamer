@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
@@ -23,7 +24,6 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-import android.os.Handler;
 
 import com.santhoshn.spotifystreamer.service.MediaPlayerReceiver;
 import com.santhoshn.spotifystreamer.service.MediaPlayerService;
@@ -40,11 +40,11 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
 
     public static final String TRACK_INDEX = "trackIndex";
     public static final String PLAY_LIST = "playList";
+    public static final String SEEK_TO = "seekTo";
+    public static final String IS_SHOW_NOW_PLAYING = "isShowNowPlaying";
+    public static final int INVALID_INDEX = -1;
 
     private static final String SHARE_HASHTAG = "#SpotifyStreamerApp ";
-    private static final String PLAYING_INDEX = "playingIndex";
-    private static final String SEEK_TO = "seekTo";
-
     private ShareActionProvider mShareActionProvider;
 
     private Handler mHandler = new Handler();
@@ -75,9 +75,9 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
     private Runnable mUpdateTimeTask = new Runnable() {
         @Override
         public void run() {
-            if(mPlayerService != null){
-                if(mPlayerService.getPlayer() != null) {
-                    if(mPlayerService.getPlayer().isPlaying()) {
+            if (mPlayerService != null) {
+                if (mPlayerService.getPlayer() != null) {
+                    if (mPlayerService.getPlayer().isPlaying()) {
                         int progress = Utilities.getProgressPercentage(mPlayerService.getPlayer().getCurrentPosition(), mPlayerService.getPlayer().getDuration());
                         seekBar.setProgress(progress);
                     }
@@ -93,13 +93,21 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
             MediaPlayerBinder binder = (MediaPlayerBinder) service;
             //get service
             mPlayerService = binder.getService();
-            //pass track list
-            mPlayerService.setTracks(mTracks);
-            mPlayerService.setTrackIndex(mPlayingIndex);
+            if (mSeekTo != INVALID_INDEX) {
+                if (mTracks != null) {
+                    mPlayerService.setTracks(mTracks);
+                }
+                mPlayerService.setTrackIndex(mPlayingIndex);
+                if (mSeekTo != INVALID_INDEX) {
+                    mPlayerService.setCompleted(mSeekTo);
+                }
+                startTrack();
+            } else {
+                mPlayingIndex = mPlayerService.getTrackIndex();
+                showPlayer();
+            }
             mPlayerService.setReceiver(mReceiver);
-            mPlayerService.setCompleted(mSeekTo);
             serviceBound = true;
-            startTrack();
         }
 
         @Override
@@ -108,7 +116,8 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
         }
     };
 
-    public PlayerActivityFragment() {}
+    public PlayerActivityFragment() {
+    }
 
 
     @Override
@@ -120,18 +129,26 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
         mReceiver.setReceiver(this);
         Bundle arguments = getArguments();
         if (arguments != null) {
-            mTracks = arguments.getParcelableArrayList(PLAY_LIST);
-            mPlayingIndex = arguments.getInt(TRACK_INDEX);
+            boolean isShowNowPlaying = arguments.getBoolean(IS_SHOW_NOW_PLAYING);
+            if(isShowNowPlaying) {
+                mTracks = arguments.getParcelableArrayList(PLAY_LIST);
+                mSeekTo = arguments.getInt(SEEK_TO);
+            } else {
+                mTracks = arguments.getParcelableArrayList(PLAY_LIST);
+                mPlayingIndex = arguments.getInt(TRACK_INDEX);
+                mSeekTo = arguments.getInt(SEEK_TO);
+            }
         }
+
         if (playerIntent == null) {
             playerIntent = new Intent(getActivity(), MediaPlayerService.class);
             getActivity().bindService(playerIntent, mediaConnection, Context.BIND_AUTO_CREATE);
             getActivity().startService(playerIntent);
         }
 
-        if (savedInstanceState != null && savedInstanceState.containsKey(PLAYING_INDEX)) {
-            mPlayingIndex = savedInstanceState.getInt(PLAYING_INDEX);
-            if(savedInstanceState.containsKey(SEEK_TO)){
+        if (savedInstanceState != null && savedInstanceState.containsKey(TRACK_INDEX)) {
+            mPlayingIndex = savedInstanceState.getInt(TRACK_INDEX);
+            if (savedInstanceState.containsKey(SEEK_TO)) {
                 mSeekTo = savedInstanceState.getInt(SEEK_TO);
             }
         }
@@ -145,7 +162,7 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
         seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-               // mHandler.removeCallbacks(mUpdateTimeTask);
+                // mHandler.removeCallbacks(mUpdateTimeTask);
             }
 
             @Override
@@ -154,8 +171,8 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
             }
 
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress,boolean fromUser) {
-                if(fromUser && mPlayerService != null && mPlayerService.getPlayer() != null) {
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser && mPlayerService != null && mPlayerService.getPlayer() != null) {
                     int completedTime = Utilities.getCompletedTime(progress, mPlayerService.getPlayer().getDuration());
                     mPlayerService.seekDuration(completedTime);
                     updateProgressBar();
@@ -233,7 +250,7 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
             mTrackName.setText(track.getTrackName());
             mTrackDuration.setText(Utilities.getFormatedTime(30000));
             mNowPlaying = "#NowPlaying " + track.getTrackUrl();
-            if(mShareActionProvider != null) {
+            if (mShareActionProvider != null) {
                 mShareActionProvider.setShareIntent(createShareNowPlayingIntent());
             }
         }
@@ -271,14 +288,24 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
     }
 
     public void startTrack() {
-        seekBar.setProgress(0);
-        mPlayerService.setTrackIndex(mPlayingIndex);
-        mHandler.removeCallbacks(mUpdateTimeTask);
-        updateProgressBar();
-        if (isPlaying) {
-            mPlayerService.playTrack();
+        seekBar.setProgress(Utilities.getProgressPercentage(mSeekTo, 30000));
+        if(mPlayerService != null) {
+            mPlayerService.setTrackIndex(mPlayingIndex);
+            mHandler.removeCallbacks(mUpdateTimeTask);
+            updateProgressBar();
+            if (isPlaying) {
+                mPlayerService.playTrack();
+            }
+            updateUI();
         }
-        updateUI();
+    }
+
+    public void showPlayer() {
+        seekBar.setProgress(Utilities.getProgressPercentage(mSeekTo, 30000));
+        if(mPlayerService != null) {
+            updateProgressBar();
+            updateUI();
+        }
     }
 
     /*
@@ -322,10 +349,10 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
 
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
-        if(resultCode == MediaPlayerService.TRACK_COMPLETED) {
-           if(mPlayingIndex < mTracks.size() - 1) {
-               playNextTrack(null);
-           }
+        if (resultCode == MediaPlayerService.TRACK_COMPLETED) {
+            if (mPlayingIndex < mTracks.size() - 1) {
+                playNextTrack(null);
+            }
         }
     }
 
@@ -335,7 +362,7 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
         // When no item is selected, mPosition will be set to Listview.INVALID_POSITION,
         // so check for that before storing.
         if (mPlayingIndex != -1) {
-            outState.putInt(PLAYING_INDEX, mPlayingIndex);
+            outState.putInt(TRACK_INDEX, mPlayingIndex);
             if (mPlayerService != null && mPlayerService.getPlayer() != null) {
                 outState.putInt(SEEK_TO, mPlayerService.getPlayer().getCurrentPosition());
             }

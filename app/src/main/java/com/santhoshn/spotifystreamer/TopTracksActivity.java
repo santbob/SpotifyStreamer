@@ -47,10 +47,11 @@ public class TopTracksActivity extends ActionBarActivity implements ArtistCallba
     }
 
     @Override
-    public void onTrackSelected(int trackIndex, ArrayList<Track> tracks) {
+    public void onTrackSelected(int trackIndex, ArrayList<Track> tracks, int seekUntil) {
         Intent intent = new Intent(this, PlayerActivity.class)
                 .putParcelableArrayListExtra(PlayerActivityFragment.PLAY_LIST, tracks)
-                .putExtra(PlayerActivityFragment.TRACK_INDEX, trackIndex);
+                .putExtra(PlayerActivityFragment.TRACK_INDEX, trackIndex)
+                .putExtra(PlayerActivityFragment.SEEK_TO, seekUntil);
         startActivity(intent);
     }
 
