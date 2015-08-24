@@ -22,10 +22,16 @@ public class PlayerActivity extends AppCompatActivity {
         arguments.putInt(PlayerActivityFragment.TRACK_INDEX, trackIndex);
         arguments.putParcelableArrayList(PlayerActivityFragment.PLAY_LIST, playlist);
         arguments.putInt(PlayerActivityFragment.SEEK_TO, seekUntil);
+        //if seekUntil is -1 its means just show whats playing.
+        if(seekUntil == PlayerActivityFragment.INVALID_INDEX) {
+            arguments.putBoolean(PlayerActivityFragment.IS_SHOW_NOW_PLAYING, true);
+        } else {
+            arguments.putBoolean(PlayerActivityFragment.IS_SHOW_NOW_PLAYING, false);
+        }
 
         PlayerActivityFragment fragment = new PlayerActivityFragment();
         fragment.setArguments(arguments);
 
-        getFragmentManager().beginTransaction().add(R.id.player_container, fragment).commit();
+        getFragmentManager().beginTransaction().replace(R.id.player_container, fragment).commit();
     }
 }

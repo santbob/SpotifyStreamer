@@ -31,7 +31,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     int mTrackIndex;
     boolean trackLoaded = false;
     int mCompleted = 0;
-    int pausedIndex;
+    int pausedIndex = -1;
 
     public static final int TRACK_COMPLETED = 0;
 

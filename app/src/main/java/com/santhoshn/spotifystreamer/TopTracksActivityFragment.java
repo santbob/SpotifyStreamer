@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +38,8 @@ public class TopTracksActivityFragment extends Fragment {
     private ArrayList<Track> mTracks = new ArrayList<Track>();
     private TrackListAdapter mTracksAdapter;
     private SpotifyService mSpotifyService = new SpotifyApi().getService();
+
+    private MenuItem mNowPlayingItem = null;
 
     public TopTracksActivityFragment() {
     }
@@ -82,6 +86,7 @@ public class TopTracksActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
+                    mNowPlayingItem.setVisible(true);
                     ((ArtistCallback) getActivity()).onTrackSelected(position, mTracks, 0);
                 } catch (Exception e) {
                     System.out.println(e);
@@ -89,6 +94,12 @@ public class TopTracksActivityFragment extends Fragment {
             }
         });
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        mNowPlayingItem = menu.findItem(R.id.action_now_playing);
+        mNowPlayingItem.setVisible(false);
     }
 
     @Override

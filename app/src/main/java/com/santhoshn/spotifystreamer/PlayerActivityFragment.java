@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,6 +38,8 @@ import java.util.ArrayList;
  * A Dialog Fragment which acts as Media Player
  */
 public class PlayerActivityFragment extends DialogFragment implements MediaPlayerReceiver.Receiver {
+
+    private static final String LOG_TAG = PlayerActivityFragment.class.getSimpleName();
 
     public static final String TRACK_INDEX = "trackIndex";
     public static final String PLAY_LIST = "playList";
@@ -77,9 +80,15 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
         public void run() {
             if (mPlayerService != null) {
                 if (mPlayerService.getPlayer() != null) {
-                    if (mPlayerService.getPlayer().isPlaying()) {
-                        int progress = Utilities.getProgressPercentage(mPlayerService.getPlayer().getCurrentPosition(), mPlayerService.getPlayer().getDuration());
-                        seekBar.setProgress(progress);
+                    try {
+                        if (mPlayerService.getPlayer().isPlaying()) {
+                            int progress = Utilities.getProgressPercentage(mPlayerService.getPlayer().getCurrentPosition(), mPlayerService.getPlayer().getDuration());
+                            seekBar.setProgress(progress);
+                        }
+                    } catch (IllegalStateException stateException) {
+                        Log.e(LOG_TAG, stateException.toString());
+                    } catch (Exception e) {
+                        Log.e(LOG_TAG, e.toString());
                     }
                 }
             }
@@ -93,10 +102,10 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
             MediaPlayerBinder binder = (MediaPlayerBinder) service;
             //get service
             mPlayerService = binder.getService();
+            if (mTracks != null) {
+                mPlayerService.setTracks(mTracks);
+            }
             if (mSeekTo != INVALID_INDEX) {
-                if (mTracks != null) {
-                    mPlayerService.setTracks(mTracks);
-                }
                 mPlayerService.setTrackIndex(mPlayingIndex);
                 if (mSeekTo != INVALID_INDEX) {
                     mPlayerService.setCompleted(mSeekTo);
@@ -131,7 +140,7 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
         Bundle arguments = getArguments();
         if (arguments != null) {
             boolean isShowNowPlaying = arguments.getBoolean(IS_SHOW_NOW_PLAYING);
-            if(isShowNowPlaying) {
+            if (isShowNowPlaying) {
                 mTracks = arguments.getParcelableArrayList(PLAY_LIST);
                 mSeekTo = arguments.getInt(SEEK_TO);
             } else {
@@ -223,6 +232,21 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(getActivity(), SettingsActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private Intent createShareNowPlayingIntent() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
@@ -290,7 +314,7 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
 
     public void startTrack() {
         seekBar.setProgress(Utilities.getProgressPercentage(mSeekTo, 30000));
-        if(mPlayerService != null) {
+        if (mPlayerService != null) {
             mPlayerService.setTrackIndex(mPlayingIndex);
             mHandler.removeCallbacks(mUpdateTimeTask);
             updateProgressBar();
@@ -303,7 +327,7 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
 
     public void showPlayer() {
         seekBar.setProgress(Utilities.getProgressPercentage(mSeekTo, 30000));
-        if(mPlayerService != null) {
+        if (mPlayerService != null) {
             updateProgressBar();
             updateUI();
         }
