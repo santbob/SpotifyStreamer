@@ -258,6 +258,7 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
     @Override
     public void onDestroy() {
         getActivity().stopService(playerIntent);
+        getActivity().unbindService(mediaConnection);
         mPlayerService = null;
         super.onDestroy();
     }
