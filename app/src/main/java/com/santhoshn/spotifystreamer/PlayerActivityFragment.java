@@ -153,7 +153,6 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
         if (playerIntent == null) {
             playerIntent = new Intent(getActivity(), MediaPlayerService.class);
             getActivity().bindService(playerIntent, mediaConnection, Context.BIND_AUTO_CREATE);
-            getActivity().startService(playerIntent);
         }
 
         if (savedInstanceState != null && savedInstanceState.containsKey(TRACK_INDEX)) {
