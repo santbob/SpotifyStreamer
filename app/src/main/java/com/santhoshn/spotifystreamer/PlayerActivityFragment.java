@@ -126,9 +126,14 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
     };
 
     public PlayerActivityFragment() {
-        setHasOptionsMenu(true);
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -256,27 +261,33 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
 
     @Override
     public void onDestroy() {
-        getActivity().stopService(playerIntent);
-        getActivity().unbindService(mediaConnection);
-        mPlayerService = null;
-        super.onDestroy();
+        try {
+            getActivity().unbindService(mediaConnection);
+            mPlayerService = null;
+        } catch (Exception e) {
+            //illegalState exception might be thrown dont worry abt if for now.
+        } finally {
+            super.onDestroy();
+        }
     }
 
     /*
         Method which updates the Player with Track at currentIndex
      */
     public void updateTrackDetails() {
-        Track track = mTracks.get(mPlayingIndex);
-        if (track != null) {
-            mArtistName.setText(track.getArtistName());
-            mAlbumName.setText(track.getAlbumName());
-            Picasso.with(getActivity()).load(track.getThumbnailImageUrl())
-                    .into(mAlbumArtWork);
-            mTrackName.setText(track.getTrackName());
-            mTrackDuration.setText(Utilities.getFormatedTime(30000));
-            mNowPlaying = "#NowPlaying " + track.getTrackUrl();
-            if (mShareActionProvider != null) {
-                mShareActionProvider.setShareIntent(createShareNowPlayingIntent());
+        if (mTracks != null && !mTracks.isEmpty()) {
+            Track track = mTracks.get(mPlayingIndex);
+            if (track != null) {
+                mArtistName.setText(track.getArtistName());
+                mAlbumName.setText(track.getAlbumName());
+                Picasso.with(getActivity()).load(track.getThumbnailImageUrl())
+                        .into(mAlbumArtWork);
+                mTrackName.setText(track.getTrackName());
+                mTrackDuration.setText(Utilities.getFormatedTime(30000));
+                mNowPlaying = "#NowPlaying " + track.getTrackUrl();
+                if (mShareActionProvider != null) {
+                    mShareActionProvider.setShareIntent(createShareNowPlayingIntent());
+                }
             }
         }
     }
