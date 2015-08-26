@@ -125,8 +125,12 @@ public class TopTracksActivityFragment extends Fragment {
 
 
     private void fetchTop10Tracks(String artistSpotifyId) {
-        FetchTracksTask fetchTracksTask = new FetchTracksTask();
-        fetchTracksTask.execute(artistSpotifyId);
+        if(Utilities.isNetworkAvailable(getActivity())) {
+            FetchTracksTask fetchTracksTask = new FetchTracksTask();
+            fetchTracksTask.execute(artistSpotifyId);
+        } else {
+            showToast(getString(R.string.error_no_internet));
+        }
     }
 
     private void updateTracksAdapter(ArrayList<Track> tracks) {
@@ -193,14 +197,13 @@ public class TopTracksActivityFragment extends Fragment {
                 showToast(getString(R.string.error_null_result_for_tracks));
             }
         }
-
-        /*
-           Shows the Toast message when there is no data for listview.
-        */
-        private void showToast(String displayText) {
-            Toast toast = Toast.makeText(getActivity(), displayText, Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 10, 30);
-            toast.show();
-        }
+    }
+    /*
+          Shows the Toast message when there is no data for listview.
+       */
+    private void showToast(String displayText) {
+        Toast toast = Toast.makeText(getActivity(), displayText, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 10, 30);
+        toast.show();
     }
 }

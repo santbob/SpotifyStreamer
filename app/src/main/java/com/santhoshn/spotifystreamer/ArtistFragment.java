@@ -64,7 +64,11 @@ public class ArtistFragment extends Fragment {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     InputMethodManager in = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     in.hideSoftInputFromWindow(mSearchText.getWindowToken(), 0);
-                    searchArtist();
+                    if(Utilities.isNetworkAvailable(getActivity())) {
+                        searchArtist();
+                    } else {
+                        showToast(getString(R.string.error_no_internet));
+                    }
                     //set the scroll position of listview to default
                     //reference - https://discussions.udacity.com/t/listview-scroll-position-stays-the-same-on-new-search/24601
                     mListView.setSelection(View.SCROLLBAR_POSITION_DEFAULT);
@@ -172,14 +176,13 @@ public class ArtistFragment extends Fragment {
                 showToast(getString(R.string.error_null_result_for_artist));
             }
         }
-
-        /*
-           Shows the Toast message when there is no data for listview.
-        */
-        private void showToast(String displayText) {
-            Toast toast = Toast.makeText(getActivity(), displayText, Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 10, 30);
-            toast.show();
-        }
+    }
+    /*
+          Shows the Toast message when there is no data for listview.
+       */
+    private void showToast(String displayText) {
+        Toast toast = Toast.makeText(getActivity(), displayText, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 10, 30);
+        toast.show();
     }
 }
