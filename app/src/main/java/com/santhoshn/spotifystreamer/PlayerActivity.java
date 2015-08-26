@@ -28,20 +28,29 @@ public class PlayerActivity extends AppCompatActivity {
         ArrayList<Track> playlist;
 
         //use the savedInstance values if available else read it from intent
-        if (savedInstanceState != null) {
-            trackIndex = savedInstanceState.getInt(PlayerActivityFragment.TRACK_INDEX, 0);
-            playlist = savedInstanceState.getParcelableArrayList(PlayerActivityFragment.PLAY_LIST);
-            seekUntil = savedInstanceState.getInt(PlayerActivityFragment.SEEK_TO, 0);
-        } else {
-            trackIndex = getIntent().getIntExtra(PlayerActivityFragment.TRACK_INDEX, 0);
-            playlist = getIntent().getParcelableArrayListExtra(PlayerActivityFragment.PLAY_LIST);
-            seekUntil = getIntent().getIntExtra(PlayerActivityFragment.SEEK_TO, 0);
-        }
+//        if (savedInstanceState != null) {
+//            trackIndex = savedInstanceState.getInt(PlayerActivityFragment.TRACK_INDEX, 0);
+//            playlist = savedInstanceState.getParcelableArrayList(PlayerActivityFragment.PLAY_LIST);
+//            seekUntil = savedInstanceState.getInt(PlayerActivityFragment.SEEK_TO, 0);
+//        } else {
+//            trackIndex = getIntent().getIntExtra(PlayerActivityFragment.TRACK_INDEX, 0);
+//            playlist = getIntent().getParcelableArrayListExtra(PlayerActivityFragment.PLAY_LIST);
+//            seekUntil = getIntent().getIntExtra(PlayerActivityFragment.SEEK_TO, 0);
+//        }
+
+
+        trackIndex = getIntent().getIntExtra(PlayerActivityFragment.TRACK_INDEX, 0);
+        playlist = getIntent().getParcelableArrayListExtra(PlayerActivityFragment.PLAY_LIST);
+        seekUntil = getIntent().getIntExtra(PlayerActivityFragment.SEEK_TO, 0);
+
 
         //Now create the arguments bundle and start the fragment.
         Bundle arguments = new Bundle();
         arguments.putInt(PlayerActivityFragment.TRACK_INDEX, trackIndex);
-        arguments.putParcelableArrayList(PlayerActivityFragment.PLAY_LIST, playlist);
+        if (playlist != null) {
+            arguments.putParcelableArrayList(PlayerActivityFragment.PLAY_LIST, playlist);
+        }
+
         arguments.putInt(PlayerActivityFragment.SEEK_TO, seekUntil);
         //if seekUntil is -1 its means just show whats playing.
         if (seekUntil == PlayerActivityFragment.INVALID_INDEX) {
