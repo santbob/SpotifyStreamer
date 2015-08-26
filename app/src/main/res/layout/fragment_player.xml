@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="32dp"
+    android:padding="@dimen/player_padding"
     android:orientation="vertical"
     tools:context="com.santhoshn.spotifystreamer.PlayerActivityFragment">
 
@@ -12,7 +12,10 @@
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:textSize="15sp"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:maxLines="1"/>
     <TextView
         android:id="@+id/playing_album_name"
         android:layout_width="wrap_content"
@@ -20,19 +23,27 @@
         android:padding="5dp"
         android:textSize="15sp"
         android:layout_gravity="center_horizontal"
-        android:maxWidth="250dp"/>
+        android:maxWidth="250dp"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:maxLines="1"/>
     <ImageView
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:layout_margin="10dp"
-        android:id="@+id/playing_album_artwork" />
+        android:id="@+id/playing_album_artwork"
+        android:layout_gravity="center_horizontal"
+        />
     <TextView
         android:id="@+id/playing_track_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:textSize="15sp"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:maxLines="1"/>
     <SeekBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
