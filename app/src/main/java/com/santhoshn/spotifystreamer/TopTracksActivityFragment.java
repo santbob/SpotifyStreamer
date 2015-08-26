@@ -34,44 +34,57 @@ public class TopTracksActivityFragment extends Fragment {
 
     public static final String ARTIST_SPOTIFY_ID = "trackSpotifyId";
     public static final String ARTIST_NAME = "artistName";
+    public static final String ARTIST_TOP_TRACKS = "artistTracks";
 
     private ArrayList<Track> mTracks = new ArrayList<Track>();
+    private String mArtistName;
+    private String mArtistSpotifyId;
+    private MenuItem mNowPlayingItem = null;
+
     private TrackListAdapter mTracksAdapter;
     private SpotifyService mSpotifyService = new SpotifyApi().getService();
-
-    private MenuItem mNowPlayingItem = null;
 
     public TopTracksActivityFragment() {
     }
 
-    //Reference - http://developer.android.com/guide/topics/resources/runtime-changes.html#RetainingAnObject
-    // this method is only called once for this fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // retain this fragment
         setRetainInstance(true);
         setHasOptionsMenu(true);
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        String artistSpotifyId = null;
-        Bundle arguments = getArguments();
-        if (arguments != null) {
-            artistSpotifyId = arguments.getString(ARTIST_SPOTIFY_ID);
+
+        if(savedInstanceState != null) {
+            mArtistSpotifyId = savedInstanceState.getString(ARTIST_SPOTIFY_ID);
+            mArtistName = savedInstanceState.getString(ARTIST_NAME);
+            ArrayList<Track> tracks = savedInstanceState.getParcelableArrayList(ARTIST_TOP_TRACKS);
+            if(tracks !=null) {
+                mTracks = tracks;
+            }
+        } else {
+            Bundle arguments = getArguments();
+            if (arguments != null) {
+                mArtistSpotifyId = arguments.getString(ARTIST_SPOTIFY_ID);
+                mArtistName = arguments.getString(ARTIST_NAME);
+            }
         }
+
 
         View rootView = inflater.inflate(R.layout.fragment_top_ten_tracks, container, false);
 
-        if (artistSpotifyId != null) {
-            fetchTop10Tracks(artistSpotifyId);
-        }
         //create new instance of Adapter only if its not already created
         if (mTracksAdapter == null) {
             mTracksAdapter = new TrackListAdapter(getActivity(), R.layout.track_list_item, new ArrayList<Track>());
+        }
+
+        if (mArtistSpotifyId != null && mTracks.isEmpty()) {
+            fetchTop10Tracks(mArtistSpotifyId);
+        } else if (!mTracks.isEmpty()){
+            updateTracksAdapter(mTracks);
         }
 
         ListView listView = (ListView) rootView.findViewById(R.id.listview_tracksList);
@@ -114,6 +127,13 @@ public class TopTracksActivityFragment extends Fragment {
     private void fetchTop10Tracks(String artistSpotifyId) {
         FetchTracksTask fetchTracksTask = new FetchTracksTask();
         fetchTracksTask.execute(artistSpotifyId);
+    }
+
+    private void updateTracksAdapter(ArrayList<Track> tracks) {
+        if(mTracksAdapter != null) {
+            mTracksAdapter.clear();
+            mTracksAdapter.addAll(tracks);
+        }
     }
 
     private class FetchTracksTask extends AsyncTask<String, Void, List> {
@@ -164,10 +184,9 @@ public class TopTracksActivityFragment extends Fragment {
                     showToast(getString(R.string.error_empty_top10_tracks_search_result));
                 } else {
                     //clear the adapater and add the new results we got.
-                    mTracksAdapter.clear();
-                    mTracksAdapter.addAll(tracks);
                     mTracks.clear();
                     mTracks.addAll(tracks);
+                    updateTracksAdapter(mTracks);
                 }
             } else {
                 //Spotify Result null response which is bad, ideally should never happen. just for this project show it in toast.

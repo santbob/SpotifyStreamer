@@ -80,7 +80,9 @@ public class TopTracksActivity extends ActionBarActivity implements ArtistCallba
             String subTitle = intent.getStringExtra(TopTracksActivityFragment.ARTIST_NAME);
             if (subTitle != null) {
                 ActionBar ab = getSupportActionBar();
-                ab.setSubtitle(subTitle);
+                if (ab != null) {
+                    ab.setSubtitle(subTitle);
+                }
             }
         }
 
