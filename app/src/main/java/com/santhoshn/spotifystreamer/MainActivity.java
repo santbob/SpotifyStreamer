@@ -17,7 +17,6 @@ public class MainActivity extends ActionBarActivity implements ArtistCallback {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     private final String TOPTEN_TRACKS_FRAGEMENT_TAG = "top10_tracks_fragment";
     private final String PLAYER_FRAGMENT_TAG = "player";
-    private ArtistFragment mArtistFragment;
     private boolean mTwoPane;
 
     @Override
@@ -40,7 +39,9 @@ public class MainActivity extends ActionBarActivity implements ArtistCallback {
             }
         } else {
             mTwoPane = false;
-            getSupportActionBar().setElevation(0f);
+            if(getSupportActionBar() != null) {
+                getSupportActionBar().setElevation(0f);
+            }
         }
     }
 
@@ -81,7 +82,7 @@ public class MainActivity extends ActionBarActivity implements ArtistCallback {
             // adding or replacing the top10tracks fragment using a
             // fragment transaction.
             Bundle args = new Bundle();
-            args.putString(TopTracksActivityFragment.TRACK_SPOTIFY_ID, spotifyId);
+            args.putString(TopTracksActivityFragment.ARTIST_SPOTIFY_ID, spotifyId);
             args.putString(TopTracksActivityFragment.ARTIST_NAME, artistName);
 
             TopTracksActivityFragment fragment = new TopTracksActivityFragment();
@@ -92,7 +93,7 @@ public class MainActivity extends ActionBarActivity implements ArtistCallback {
                     .commit();
         } else {
             Intent intent = new Intent(this, TopTracksActivity.class)
-                    .putExtra(TopTracksActivityFragment.TRACK_SPOTIFY_ID, spotifyId)
+                    .putExtra(TopTracksActivityFragment.ARTIST_SPOTIFY_ID, spotifyId)
                     .putExtra(TopTracksActivityFragment.ARTIST_NAME, artistName);
             startActivity(intent);
         }

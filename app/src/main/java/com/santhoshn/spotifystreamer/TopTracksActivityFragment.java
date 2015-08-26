@@ -32,7 +32,7 @@ import kaaes.spotify.webapi.android.models.Tracks;
  */
 public class TopTracksActivityFragment extends Fragment {
 
-    public static final String TRACK_SPOTIFY_ID = "trackSpotifyId";
+    public static final String ARTIST_SPOTIFY_ID = "trackSpotifyId";
     public static final String ARTIST_NAME = "artistName";
 
     private ArrayList<Track> mTracks = new ArrayList<Track>();
@@ -42,11 +42,6 @@ public class TopTracksActivityFragment extends Fragment {
     private MenuItem mNowPlayingItem = null;
 
     public TopTracksActivityFragment() {
-    }
-
-    private void fetchTop10Tracks(String artistSpotifyId) {
-        FetchTracksTask fetchTracksTask = new FetchTracksTask();
-        fetchTracksTask.execute(artistSpotifyId);
     }
 
     //Reference - http://developer.android.com/guide/topics/resources/runtime-changes.html#RetainingAnObject
@@ -64,10 +59,9 @@ public class TopTracksActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         String artistSpotifyId = null;
-        String artistName = null;
         Bundle arguments = getArguments();
         if (arguments != null) {
-            artistSpotifyId = arguments.getString(TRACK_SPOTIFY_ID);
+            artistSpotifyId = arguments.getString(ARTIST_SPOTIFY_ID);
         }
 
         View rootView = inflater.inflate(R.layout.fragment_top_ten_tracks, container, false);
@@ -116,6 +110,11 @@ public class TopTracksActivityFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+
+    private void fetchTop10Tracks(String artistSpotifyId) {
+        FetchTracksTask fetchTracksTask = new FetchTracksTask();
+        fetchTracksTask.execute(artistSpotifyId);
+    }
 
     private class FetchTracksTask extends AsyncTask<String, Void, List> {
         private final String LOG_TAG = FetchTracksTask.class.getSimpleName();

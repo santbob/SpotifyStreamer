@@ -25,9 +25,9 @@ public class TopTracksActivity extends ActionBarActivity implements ArtistCallba
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
-            String spotifyId = getIntent().getStringExtra(TopTracksActivityFragment.TRACK_SPOTIFY_ID);
+            String spotifyId = getIntent().getStringExtra(TopTracksActivityFragment.ARTIST_SPOTIFY_ID);
             Bundle arguments = new Bundle();
-            arguments.putString(TopTracksActivityFragment.TRACK_SPOTIFY_ID, spotifyId);
+            arguments.putString(TopTracksActivityFragment.ARTIST_SPOTIFY_ID, spotifyId);
 
             TopTracksActivityFragment fragment = new TopTracksActivityFragment();
             fragment.setArguments(arguments);
