@@ -126,12 +126,6 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
     };
 
     public PlayerActivityFragment() {
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
         setHasOptionsMenu(true);
     }
 
@@ -139,9 +133,9 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout to use as dialog or embedded fragment
-        //return inflater.inflate(R.layout.fragment_player, container, false);
         mReceiver = new MediaPlayerReceiver(new Handler());
         mReceiver.setReceiver(this);
+
         Bundle arguments = getArguments();
         if (arguments != null) {
             boolean isShowNowPlaying = arguments.getBoolean(IS_SHOW_NOW_PLAYING);
@@ -349,6 +343,7 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
     */
     public void playPreviousTrack(View view) {
         mPlayingIndex = mPlayingIndex - 1;
+        mSeekTo = 0;
         startTrack();
     }
 
@@ -379,6 +374,7 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
      */
     public void playNextTrack(View view) {
         mPlayingIndex = mPlayingIndex + 1;
+        mSeekTo = 0;
         startTrack();
     }
 
@@ -399,6 +395,7 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
         // so check for that before storing.
         if (mPlayingIndex != -1) {
             outState.putInt(TRACK_INDEX, mPlayingIndex);
+            outState.putParcelableArrayList(PLAY_LIST, mTracks);
             if (mPlayerService != null && mPlayerService.getPlayer() != null) {
                 outState.putInt(SEEK_TO, mPlayerService.getPlayer().getCurrentPosition());
             }
