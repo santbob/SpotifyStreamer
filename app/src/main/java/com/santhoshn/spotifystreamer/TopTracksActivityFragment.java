@@ -37,7 +37,6 @@ public class TopTracksActivityFragment extends Fragment {
     public static final String ARTIST_TOP_TRACKS = "artistTracks";
 
     private ArrayList<Track> mTracks = new ArrayList<Track>();
-    private String mArtistName;
     private String mArtistSpotifyId;
     private MenuItem mNowPlayingItem = null;
 
@@ -58,18 +57,16 @@ public class TopTracksActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             mArtistSpotifyId = savedInstanceState.getString(ARTIST_SPOTIFY_ID);
-            mArtistName = savedInstanceState.getString(ARTIST_NAME);
             ArrayList<Track> tracks = savedInstanceState.getParcelableArrayList(ARTIST_TOP_TRACKS);
-            if(tracks !=null) {
+            if (tracks != null) {
                 mTracks = tracks;
             }
         } else {
             Bundle arguments = getArguments();
             if (arguments != null) {
                 mArtistSpotifyId = arguments.getString(ARTIST_SPOTIFY_ID);
-                mArtistName = arguments.getString(ARTIST_NAME);
             }
         }
 
@@ -83,7 +80,7 @@ public class TopTracksActivityFragment extends Fragment {
 
         if (mArtistSpotifyId != null && mTracks.isEmpty()) {
             fetchTop10Tracks(mArtistSpotifyId);
-        } else if (!mTracks.isEmpty()){
+        } else if (!mTracks.isEmpty()) {
             updateTracksAdapter(mTracks);
         }
 
@@ -125,7 +122,7 @@ public class TopTracksActivityFragment extends Fragment {
 
 
     private void fetchTop10Tracks(String artistSpotifyId) {
-        if(Utilities.isNetworkAvailable(getActivity())) {
+        if (Utilities.isNetworkAvailable(getActivity())) {
             FetchTracksTask fetchTracksTask = new FetchTracksTask();
             fetchTracksTask.execute(artistSpotifyId);
         } else {
@@ -134,7 +131,7 @@ public class TopTracksActivityFragment extends Fragment {
     }
 
     private void updateTracksAdapter(ArrayList<Track> tracks) {
-        if(mTracksAdapter != null) {
+        if (mTracksAdapter != null) {
             mTracksAdapter.clear();
             mTracksAdapter.addAll(tracks);
         }
@@ -198,6 +195,7 @@ public class TopTracksActivityFragment extends Fragment {
             }
         }
     }
+
     /*
           Shows the Toast message when there is no data for listview.
        */

@@ -33,7 +33,7 @@ public class TopTracksActivity extends ActionBarActivity implements ArtistCallba
             fragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.topten_tracks_container, fragment)
+                    .replace(R.id.topten_tracks_container, fragment)
                     .commit();
         }
     }
