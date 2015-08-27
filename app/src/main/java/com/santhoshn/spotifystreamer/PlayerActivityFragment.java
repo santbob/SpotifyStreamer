@@ -161,7 +161,7 @@ public class PlayerActivityFragment extends DialogFragment implements MediaPlaye
             }
         }
 
-        View rootView = inflater.inflate(R.layout.fragment_player, container, false);
+        View rootView = inflater.inflate(R.layout.player_layout, container, false);
         mArtistName = (TextView) rootView.findViewById(R.id.playing_artist_name);
         mAlbumName = (TextView) rootView.findViewById(R.id.playing_album_name);
         mAlbumArtWork = (ImageView) rootView.findViewById(R.id.playing_album_artwork);
