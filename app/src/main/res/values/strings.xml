@@ -8,6 +8,7 @@
     <string name="error_null_result_for_artist">Invalid Artists Search</string>
     <string name="error_null_result_for_tracks">Invalid Top 10 tracks Search</string>
     <string name="error_no_internet">Not available while offline</string>
+    <string name="searchPlaceholderText">Search Artist (ex. Eminem)</string>
 
     <string name="title_activity_player">PlayerActivity</string>
     <string name="title_activity_settings">Settings</string>
